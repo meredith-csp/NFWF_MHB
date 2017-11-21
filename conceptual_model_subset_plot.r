@@ -18,8 +18,8 @@ print(df <- data.frame(vertexID=c(1:length(vertex.info$name)), vertexName=vertex
   # We will want to replace the following with code that reads action and target selections 
   # from the user interface and assigns them correct vertex IDs from the network;
   # As an example for now, I just punched in IDs for a couple randomly selected actions and targets
-select.actions <- c(9,10)  # vertex IDs for selected actions
-select.targets <- c(29,30)  # vertex IDs for selected targets
+select.actions <- c(10)  # vertex IDs for selected actions
+select.targets <- c(27,28)  # vertex IDs for selected targets
 
 
 ### Find all nodes and edges along directed paths between selected target and action
