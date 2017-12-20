@@ -27,20 +27,26 @@ ynp <-  st_read("C:/Work/SpatialData/Boundaries/NPS/YNP_Boundary/ynp.shp", strin
 blm.graze <- st_read("C:/Work/SpatialData/NFWF_Cross_Realm/BLM_Grazing_Allotments/Grazing_Allotments/gra_allot_poly.shp", stringsAsFactors=FALSE)  # BLM grazing allotments in Montana
 fs.graze <- st_read("C:/Work/SpatialData/NFWF_Cross_Realm/USFS_Grazing_Allotments/R1_Allotments.shp", stringsAsFactors=FALSE)  # Forest Service grazing allotments
 dnrc.lands <- st_read("C:/Work/SpatialData/NFWF_Cross_Realm/DNRCAgAndGrazing20170928/AgAndGrazing20170928.shp", stringsAsFactors=FALSE)  # MT state trust lands (some have grazing agreements)
-
-riparian <-    # riparian areas from Dave
+vca <-    st_read("C:/Work/SpatialData/NFWF_Cross_Realm/VCA_Region_10u/unconfined_valley_bottom_clipped.shp")  # unconfined valley bottoms
 streamflow <- st_read("C:/Work/SpatialData/NFWF_Cross_Realm/NHDPlusV21/MHB_streamflow_noZeroOr-9999.shp")
-
+forest.centrality <- st_read("C:/Work/SpatialData/NFWF_Cross_Realm/Theobald_flowlines_clipped/Theobald_forest_flowlines.shp")
+alpine.centrality <- st_read("C:/Work/SpatialData/NFWF_Cross_Realm/Theobald_flowlines_clipped/Theobald_alpine_flowlines.shp")
+grassland.centrality <-st_read("C:/Work/SpatialData/NFWF_Cross_Realm/Theobald_flowlines_clipped/Theobald_grassland_flowlines.shp")
+shrubland.centrality <- st_read("C:/Work/SpatialData/NFWF_Cross_Realm/Theobald_flowlines_clipped/Theobald_shrub_flowlines.shp")
+biotic.condition <- st_read("C:/Work/SpatialData/NFWF_Cross_Realm/NHDPlusV21/NHDPlusV21_Flowline_MHBclip.shp")
+streamtemp <- st_read("C:/Work/SpatialData/NFWF_Cross_Realm/NorWeST_PredictedStreamTempLines_MissouriHW/NorWeST_PredictedStreamTempLines_MissouriHW.shp")
 
 ### Load rasters
 bps <- raster("C:/Work/SpatialData/NFWF_Cross_Realm/LANDFIRE/US_140BPS_MHBclip.tif")
 evt <- raster("C:/Work/SpatialData/NFWF_Cross_Realm/LANDFIRE/US_140EVT_MHBclip.tif")
 vdep <- raster("C:/Work/SpatialData/NFWF_Cross_Realm/LANDFIRE/US_140VDEP_MHBclip.tif")
 whp <- raster("C:/Work/SpatialData/NFWF_Cross_Realm/WildfireHazardPotential/Data/whp_2014_continuous/whp2014_cnt.tif", stringsAsFactors=FALSE) # wildfire hazard potential (from USFS)
+ssurgo <- raster("C:/Work/SpatialData/NFWF_Cross_Realm/soils_GSSURGO_mt_3509679_01/MapunitRaster_mt_10m.tif")
 template <- raster("C:/Users/Tyler/Google Drive/NFWF Cross Realm/Data/RasterTemplate/MHB_plu_270.txt") # load raster template from Meredith for Zonation
 
 ### Reproject to common projection - use UTM Zone 12, NAD83 (projection used for LANDFIRE data)
 newproj <- proj4string(bps)
+
 shapefiles <- c("huc6","huc12","nhd","prvtcons","publiclands","ynp","blm.graze","fs.graze","dnrc.graze")  # names of shapefiles to reproject
 for(i in 1:length(shapefiles)) {   # reproject shapefiles
   reproj <- st_transform(get(shapefiles[i]), crs=newproj)
@@ -48,7 +54,10 @@ for(i in 1:length(shapefiles)) {   # reproject shapefiles
 }
 
 
-### Clip input layers to MHB extent
+
+
+
+### Clip input layers to MHB extent -  not sure this is actually necessary, since we're running zonal stats for MHB HUC12s and data outside the HUC polygons will not be considered
 croplayernames <- c("nhd","prvtcons","publiclands","easements")  # names of layers you want to crop
 mhb.sp <- as(mhb, "Spatial") # convert mhb sf layer to sp (so extent can be extracted by crop function)
 for(k in 1:length(croplayernames)) {
@@ -74,6 +83,16 @@ for(l in 1:length(croprastnames)) {
   temp <- get(croprastnames[l])
   writeRaster(temp, paste0(outfolder,croprastnames[l],".tif"), format="GTiff", prj=TRUE)
 }
+
+
+
+
+
+
+
+
+
+# Move all of this below to its own script; will need to add a few lines that load in EVT and BPS rasters
 
 
 
@@ -125,6 +144,9 @@ riparian.loss <- c(25,26,27,28,30)   # BPS=riparian, EVT=not riparian
 forest.encroach <- c(14,20,26,32)   # BPS=Grassland/shrubland/OtherNatural/Riparian, EVT=Forest
 shrub.encroach <- c(12,18,24)  # BPS=forest/grassland/otherNatural, EVT=shrubland
 
+'%notin%' <- function(x,y) !(x %in% y)
+evt.forest.encroach <- trans.rcl
+evt.forest.encroach[evt.forest.encroach %notin% forest.encroach] <- NA
 
 ### Generate mask layers
 
