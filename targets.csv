@@ -1,6 +1,0 @@
-abbv,name,weight,file
-rh,Riparian health,1,rh.tif
-rc,Riparian condition,1,rc.tif
-uv,Upland vegetation,1,uv.tif
-whc,Within habitat connectivity,1,whc.tif
-nfr,Normative flow regime,1,nfr.tif

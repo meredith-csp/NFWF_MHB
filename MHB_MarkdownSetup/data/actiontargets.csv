@@ -1,0 +1,6 @@
+abbv,name,weight,file,option1,option2,option3,option4,option5,option6,option7,option8
+uv,Upland vegetation,1,uv.tif,1,0,1,1,1,1,0,1
+whc,Within habitat connectivity,1,whc.tif,1,1,1,1,0,1,1,1
+rc,Riparian condition,1,rc.tif,1,1,1,1,0,1,1,1
+sh,Stream health,1,sh.tif,1,1,1,1,1,1,1,1
+nfr,Normative flow regime,1,nfr.tif,1,0,0,0,1,1,1,1

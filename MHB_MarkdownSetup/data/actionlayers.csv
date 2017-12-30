@@ -1,0 +1,9 @@
+action,label,masklyr
+Easement,option1,private.tif
+Retrofit,option2,structures.tif
+Decommission,option3,backroads.tif
+GrazeMgmt,option4,allotments.tif
+IrrigationAdj,option5,irrigated.tif
+SoilMgmt,option6,NA
+Restoration,option7,valbottom.tif
+VegMgmt,option8,NA
