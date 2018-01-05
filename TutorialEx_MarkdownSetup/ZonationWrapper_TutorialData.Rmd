@@ -1,0 +1,114 @@
+---
+title: "Conservation Prioritization Tool: Example with Tutorial Data"
+#author: "Meredith McClure"
+date: "last updated 01/04/2017"
+output: html_notebook
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***
+Use this interactive document to run and explore a spatial prioritization for a focal conservation action in the Missouri Headwaters Basin. 
+First, select your conservation action of interest and assign weights to conservation targets that are linked to that action. When the prioritization process is finished, you can explore the results with the map and plots below.
+
+***
+
+### Prioritization Settings
+```{r include=FALSE}
+library(raster, quietly=T)
+library(rgdal, quietly=T)
+library(leaflet, quietly=T)
+library(zonator, quietly=T)
+```
+
+```{r globalfiles, echo=FALSE, warning=FALSE}
+targ.summ<-read.csv("data/actiontargets.csv",header=T)
+act.lyrs<-read.csv("data/actionlayers.csv",header=T)
+```
+
+```{r eruptions, echo=FALSE, warning=TRUE}
+fluidPage(sidebarLayout(
+  sidebarPanel(
+    wellPanel(
+      textInput("run.name","Give your prioritization a name:","e.g., 'MyAction_Run1'"),
+  
+      radioButtons("action.sel", "Select Action of Interest:",
+               c("Action 1" = "option1",
+                 "Action 2" = "option2",
+                 "Action 3" = "option3",
+                 "Action 4" = "option4")
+                 )
+    ),
+  
+    wellPanel(
+        actionButton("run.tool", "Run prioritization"),
+        actionButton("load.inputs", "Load last-used settings") 
+    ),
+    
+    wellPanel(
+      textOutput("instruc")
+    )
+  ),
+  
+  mainPanel(
+      wellPanel(
+          h5("Set weights for each target:"),
+          uiOutput("wt.sel")
+      )
+      )
+  )
+)
+
+output$wt.sel <- renderUI({
+      targets<-targ.summ[targ.summ[,input$action.sel]==1,"name"]
+      lapply(1:length(targets), function(i) {
+        if(length(input$action.sel)==0) {output$wt.sel0 <- renderText({" "})} else {
+        sliderInput(inputId=paste0("targ",i),label=targets[i],min=0,max=1,value=0,step=0.1)}
+        })
+})
+
+observeEvent(input$load.inputs,{   
+    
+    if(!file.exists('runs/lastinputs.RDS')) {return(NULL)}
+    
+    savedInputs <- readRDS('runs/lastinputs.RDS')
+    
+    inputIDs      <- names(savedInputs) 
+    inputvalues   <- unlist(savedInputs) 
+    for (i in 1:length(savedInputs)) { 
+      session$sendInputMessage(inputIDs[i],  list(value=inputvalues[[i]]) )
+    }
+  })
+  
+  observeEvent(input$run.tool,{ 
+    saveRDS(reactiveValuesToList(input), file = 'runs/lastinputs.RDS')
+
+    project_path<-file.path("runs")
+    variant_name<-input$run.name
+    input_raster_dir<-"data/01_biodiversity_features/02_habitats/forest"
+    
+    create_zproject(name=input$run.name,dir=project_path,variants=variant_name,spp_template_dir=input_raster_dir,spp_file_pattern="*.tif",overwrite=T,weight=c(input$targ1,input$targ2,input$targ3,input$targ4))
+
+    dat<-list("Settings" = list("removal rule"=2, "warp factor"=50, "edge removal"=1, 
+                            "use planning unit layer"=0, "use cost"=0, 
+                            "use mask"=1, "mask file"=act.lyrs[act.lyrs[,'label']==input$action.sel,"masklyr"],
+                            "use tree connectivity"=0))
+    write_dat(dat,paste0(project_path,"/",input$run.name,"/",variant_name,"/",variant_name,".dat"),overwrite=T)
+    
+    shell.exec(paste0("\\",project_path,"\\",input$run.name,"\\",variant_name,".bat"))
+    
+    output$instruc<-renderText({paste("Please wait while your prioritization is run. Your results will appear below and will be saved to ",project_path,"/",input$run.name,".",sep="")})
+  })  
+```
+
+***
+
+This custom decision support tool was developed by [The Center for Large Landscape Conservation](http://www.largelandscapes.org) and [Conservation Science Partners](http://www.csp-inc.org).  
+The prioritization is run using [Zonation 4.0](https://www.helsinki.fi/en/researchgroups/metapopulation-research-centre/software#section-14300) and the [zonator](https://github.com/cbig/zonator) package for R, developed by [Atte Moilanen](https://www.helsinki.fi/en/researchgroups/metapopulation-research-centre/research-and-subgroups/c-big-conservation-biology-informatics-group), [Joona Lehtomaki](https://github.com/jlehtoma), and colleagues at the University of Helsinki. 
+This project was funded by [The National Fish & Wildlife Foundation](http://www.nfwf.org).
+
+
+
