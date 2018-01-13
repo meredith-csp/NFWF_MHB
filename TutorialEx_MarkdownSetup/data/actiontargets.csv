@@ -1,5 +1,0 @@
-abbv,name,weight,file,option1,option2,option3,option4
-bf,Birch Forest,1,birch_forest.tif,1,0,1,1
-od,Other Deciduous,1,other_deciduous_forest.tif,1,1,1,0
-pf,Pine Forest,1,pine_forest.tif,1,1,0,1
-sf,Spruce Forest,1,spruce_forest.tif,1,1,0,1

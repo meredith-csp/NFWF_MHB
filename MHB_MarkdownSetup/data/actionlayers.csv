@@ -4,6 +4,6 @@ Retrofit,option2,structures.tif
 Decommission,option3,backroads.tif
 GrazeMgmt,option4,allotments.tif
 IrrigationAdj,option5,irrigated.tif
-SoilMgmt,option6,NA
+SoilMgmt,option6,aglands.tif
 Restoration,option7,valbottom.tif
-VegMgmt,option8,NA
+VegMgmt,option8,uplands.tif

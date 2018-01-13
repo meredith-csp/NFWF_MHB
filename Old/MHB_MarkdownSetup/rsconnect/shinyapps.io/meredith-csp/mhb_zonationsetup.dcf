@@ -1,0 +1,13 @@
+name: mhb_zonationsetup
+title: MHB_ZonationSetup
+username:
+account: meredith-csp
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 250050
+bundleId: 1149691
+url: https://meredith-csp.shinyapps.io/mhb_zonationsetup/
+when: 1514141648.90038
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: runs/Restoration1/README.md|runs/Restoration1/Restoration1/Restoration1.dat
