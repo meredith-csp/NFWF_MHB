@@ -1,0 +1,13 @@
+name: ZonationInteractiveSetup_TutorialData
+title:
+username:
+account: meredith-csp
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 249328
+bundleId: 1149759
+url: https://meredith-csp.shinyapps.io/ZonationInteractiveSetup_TutorialData/
+when: 1514152253.12213
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: ZonationInteractiveSetup_TutorialData.nb.html|ZonationInteractiveSetup_TutorialData.Rmd|data/.DS_Store|data/01_biodiversity_features/.DS_Store|data/01_biodiversity_features/01_species/.DS_Store|data/01_biodiversity_features/01_species/cervidae/cervidae.tfw|data/01_biodiversity_features/01_species/cervidae/cervidae.tif|data/01_biodiversity_features/01_species/cervidae/README.md|data/01_biodiversity_features/01_species/redlisted_species/README.md|data/01_biodiversity_features/01_species/redlisted_species/redlisted_species.tif|data/01_biodiversity_features/02_habitats/.DS_Store|data/01_biodiversity_features/02_habitats/agriculture/agricultural_land.tif|data/01_biodiversity_features/02_habitats/agriculture/README.md|data/01_biodiversity_features/02_habitats/agriculture/trad_rural_biotopes.tif|data/01_biodiversity_features/02_habitats/peatlands/peatlands.tif|data/01_biodiversity_features/02_habitats/peatlands/README.md|data/01_biodiversity_features/02_habitats/wetlands/README.md|data/01_biodiversity_features/02_habitats/wetlands/wetlands.tfw|data/01_biodiversity_features/02_habitats/wetlands/wetlands.tif|data/02_ecosystem_services/ground_water.tif|data/02_ecosystem_services/README.md|data/02_ecosystem_services/recreation.tif|data/03_condition/all_land_use.tfw|data/03_condition/all_land_use.tif|data/03_condition/harmful_land_use.tif|data/03_condition/README.md|data/04_regional_plans/protected_areas.tif|data/04_regional_plans/README.md|data/04_regional_plans/regional_plan.tfw|data/04_regional_plans/regional_plan.tif|local/app.R|runs/.DS_Store|runs/lastinputs.RDS|runs/TestRunC/README.md|runs/TestRunC/TestRunC.bat|runs/TestRunC/TestRunC/TestRunC.dat|runs/TestRunC/TestRunC/TestRunC.spp
