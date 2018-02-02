@@ -19,7 +19,7 @@ relationship <- "positive"  # for rescaling from 0 to 1, should higher zonal sta
   
 inputdata <- raster(paste0(infolder, inputname))  # load input data
 zonal.mat <- zonal(x=inputdata, z=zones, fun="max", digits=0, na.rm=TRUE)  # calculate zonal statistics
-zonal.mat[zonal.mat=="-Inf"] <- nodataval  # replace -Inf values with zeros
+zonal.mat[zonal.mat=="-Inf" | zonal.mat=="NaN"] <- nodataval  # replace -Inf values with zeros
 original <- zonal.mat[,2]
 if(relationship=="positive"){   # rescale from 0 (low opportunity) to 1 ((high opportunity)
   rescaled <- (original - min(original))/(max(original)-min(original))
