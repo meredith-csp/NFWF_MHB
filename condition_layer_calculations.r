@@ -4,8 +4,8 @@ library(raster)
 library(sf)
 
 infolder <- "C:/Users/Tyler/Google Drive/NFWF Cross Realm/Data/Rasterized Inputs NAD83 UTM/"  # folder holding prepped input rasters (should have same projection, resolution, and origin as HUC12 zones layer)
-outfolder <- "C:/Users/Tyler/Google Drive/NFWF Cross Realm/Data/Condition Rasters NAD83 UTM/"   # folder where condition raster will be written
-#outfolder <- "C:/Users/Tyler/Desktop/Condition rasters/"
+#outfolder <- "C:/Users/Tyler/Google Drive/NFWF Cross Realm/Data/Condition Rasters NAD83 UTM/"   # folder where condition raster will be written
+outfolder <- "C:/Users/Tyler/Desktop/Condition rasters 2-21-18/"
 
 
 # load HUC12 zones
@@ -15,60 +15,65 @@ huc12.areas <- as.data.frame(freq(zones, digits=0, value=NULL, useNA="no", progr
 
 
 
+
+
+########################################################################################################################
+### TARGET LAYER PROCESSING ############################################################################################
+########################################################################################################################
+
+# Stream condition
+stream.biotic <- raster(paste0(infolder,"stream_biotic_condition_NAD83UTM.tif"))   # read in stream biotic condition layer
+mean.stream.biotic <- cellStats(stream.biotic, stat="mean", na.rm=TRUE)  # calculate mean value for assigning threshold
+good.stream.biotic <- stream.biotic  # create new copy of stream biotic condition for high quality streams only (i.e., those with high conservation value)
+good.stream.biotic[good.stream.biotic<mean.stream.biotic] <- NA # assign NA value to all stream pixels below this condition to keep only streams that it makes sense to conserve
+bad.stream.biotic <- stream.biotic # create new copy of stream biotic condition for low quality streams only (i.e., those with high restoration value)
+bad.stream.biotic[bad.stream.biotic>mean.stream.biotic] <- NA # assign NA value to all stream pixels above this condition to keep only streams that it makes sense to restore
+
+
+# CFM shift
+stream.cfm <- raster(paste0(infolder,"streamflow_CFM_2040_shift_NAD83UTM.tif"))   # read in CFM shift layer
+min.cfm <- cellStats(stream.cfm, stat="min")
+pos.stream.cfm <- stream.cfm + abs(min.cfm)  # switch to positive values (higher = more resistant to early shift in CFM)
+mean.pos.stream.cfm <- cellStats(pos.stream.cfm, stat="mean", na.rm=TRUE)  # calculate mean value for assigning threshold
+good.stream.cfm <- pos.stream.cfm  # create new copy of stream CFM shift for good streams only (i.e., those with low predicted shift in CFM and therefore high conservation value)
+good.stream.cfm[good.stream.cfm<mean.pos.stream.cfm] <- NA # assign NA value to all stream pixels with early shift that is larger than average to keep only streams that it makes sense to conserve
+bad.stream.cfm <- pos.stream.cfm # create new copy of stream biotic condition for low quality streams only (i.e., those with high restoration value)
+bad.stream.cfm[bad.stream.cfm>mean.pos.stream.cfm] <- NA # assign NA value to all stream pixels with early shift that is smaller than average to keep only streams that it makes sense to restore
+
+
+
+
+
+
+
+
+
 ########################################################################################################################
 ### LAND PROTECTION ####################################################################################################
 ########################################################################################################################
 
 ### LAND PROTECTION --> STREAM HEALTH
-# condition value is sum of stream biotic condition values divided by HUC area
-stream.biotic <- raster(paste0(infolder,"stream_biotic_condition_NAD83UTM.tif"))   # read in stream biotic condition layer
-zonal.mat <- zonal(x=stream.biotic, z=zones, fun="sum", na.rm=TRUE)  # calculate sum of biotic condition values for each zone
+# condition value is sum of good stream biotic condition values divided by HUC area
+zonal.mat <- zonal(x=good.stream.biotic, z=zones, fun="sum", na.rm=TRUE)  # calculate sum of biotic condition values for good streams in each zone
 zonal.mat[zonal.mat==0] <- NA  # set zones with sum=0 to NA, since we don't want to include these in prioritization as they have no opportunity for stream conservation
 original <- zonal.mat[,2]/huc12.areas[,2]  # vector of raw condition values (sum stream biotic condition / HUC area)
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1; we want to prioritize units with the highest biotic condition to conserve
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "landpro_streamhealth_condition.tif"
+outfilename <- "landpro_streamhealth_condition_NAD83UTM.tif"
 writeRaster(condition, paste0(outfolder, outfilename))
-
-# condition is mean CFM shift within HUC
-stream.biotic <- raster(paste0(infolder,"stream_biotic_condition_NAD83UTM.tif"))   # read in stream biotic condition layer
-zonal.mat <- zonal(x=stream.biotic, z=zones, fun="mean", na.rm=TRUE)  # calculate sum of biotic condition values for each zone
-zonal.mat[zonal.mat=="NaN"] <- NA  # set zones with no calculable mean to NA, since we don't want to include these in prioritization as they have no opportunity for stream conservation
-original <- zonal.mat[,2]  # vector of raw condition values
-rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1; we want to prioritize units with the highest biotic condition to conserve
-reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
-condition <- reclassify(zones, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "landpro_streamhealth_condition_MEAN.tif"
-writeRaster(condition, paste0(outfolder, outfilename))
-
 
 
 
 ### LAND PROTECTION --> NORMATIVE FLOW REGIME
-# condition is sum of CFM shift divided by HUC area 
-stream.flow.cfm.shift <- raster(paste0(infolder,"streamflow_CFM_2040_shift_NAD83UTM.tif"))   # read in CFM shift layer
-zonal.mat <- zonal(x=stream.flow.cfm.shift, z=zones, fun="sum", na.rm=TRUE)  # calculate sum of biotic condition values for each zone
-original <- zonal.mat[,2]/huc12.areas[,2]  # vector of raw condition values (sum stream biotic condition / HUC area)
+# condition is sum of good stream CFM shift divided by HUC area 
+zonal.mat <- zonal(x=good.stream.cfm, z=zones, fun="sum", na.rm=TRUE)  # calculate sum of cfm values for each zone
+original <- zonal.mat[,2]/huc12.areas[,2]  # vector of raw cfm values (sum cfm shift / HUC area)
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "landpro_flowregime_condition_SUM.tif"
+outfilename <- "landpro_flowregime_condition_NAD83UTM.tif"
 writeRaster(condition, paste0(outfolder, outfilename))
-
-# condition is mean value within HUC
-stream.flow.cfm.shift <- raster(paste0(infolder,"streamflow_CFM_2040_shift_NAD83UTM.tif"))   # read in CFM shift layer
-zonal.mat <- zonal(x=stream.flow.cfm.shift, z=zones, fun="mean", na.rm=TRUE)  # calculate sum of biotic condition values for each zone
-original <- zonal.mat[,2]  # vector of raw condition values
-rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
-reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
-condition <- reclassify(zones, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "landpro_flowregime_condition_MEAN.tif"
-writeRaster(condition, paste0(outfolder, outfilename))
-
-
-
-writeRaster(opportunity, paste0(outfolder, outfilename))
 
 
 
@@ -130,15 +135,11 @@ writeRaster(condition, paste0(outfolder, outfilename))
 
 
 ### LAND PROTECTION --> RIPARIAN CONFIGURATION
-# condition is total percent of HUC that is unmodified valley bottom
-valley <- raster(paste0(infolder, "Theobald_valley_bottom_30m_NAD83UTM.tif"))
-valley[valley>0] <- 1
-valley[valley==0] <- NA
-hmi <- raster(paste0(infolder, "HMI_90m_NAD83UTM.tif"))
-hmi[hmi>0.09] <- NA
-hmi[hmi<=0.09] <- 1
-hmi <- raster::crop(hmi, zones)
-undev.valley <- valley * hmi
+# condition is total length of stream within valley bottom
+
+# load in valley bottoms mask 
+# multiply by stream 
+
 zonal.mat <- zonal(x=undev.valley, z=zones, fun="sum", na.rm=TRUE)  # calculate sum of biotic condition values for each zone
 zonal.mat[zonal.mat==0] <- NA  # set zones with sum=0 to NA, since we don't want to include these in prioritization as they have no opportunity for conservation
 original <- zonal.mat[,2]/huc12.areas[,2]  # vector of raw condition values (sum stream biotic condition / HUC area)
@@ -154,6 +155,12 @@ writeRaster(condition, paste0(outfolder, outfilename))
   
 ### LAND PROTECTION --> UPLAND VEG COMPOSITION/STRUCTURE
 # condition is mean HMI within uplands
+# load theobald valley bottoms
+# load NHD lakes and reservoirs
+# 
+
+
+
 upland <- raster(paste0(infolder, "Theobald_valley_bottom_30m_NAD83UTM.tif"))
 upland[upland>0] <- NA
 upland[upland==0] <- 1

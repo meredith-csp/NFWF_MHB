@@ -21,7 +21,7 @@ writeRaster(all.grazing, paste0(outfolder,"grazing_mgmt_removal_mask.tif"))  # w
 
 
 
-### Stream/riparian restoration - mask includes undeveloped valley bottoms
+### Stream/riparian restoration - mask includes undeveloped valley bottoms that are not waterbodies
 valley <- raster(paste0(infolder, "Theobald_valley_bottom_30m_NAD83UTM.tif"))  # read in 30-m valley bottom layer (use 30-m for mask, but 10-m for calculating condition metrics)
 valley[valley>0] <- 1  # convert from continuous scale to valley (=1) or non-valley (=0)
 valley[is.na(valley)==TRUE] <- 0
@@ -29,7 +29,10 @@ undeveloped <- raster(paste0(infolder,"nlcd_2011_NAD83UTM_v3.tif"))   # read in 
 developed.ids <-  c(21,22,23,24)
 undeveloped[!undeveloped %in% developed.ids] <- 1
 undeveloped[undeveloped %in% developed.ids] <- 0
-undev.valley <- undeveloped * valley
+waterbody <- raster(paste0(infolder,"lakes_ponds_reservoirs_NAD83UTM.tif"))
+waterbody[waterbody==1] <- 0
+waterbody[is.na(waterbody)==TRUE] <- 1
+undev.valley <- undeveloped * valley * waterbody
 writeRaster(undev.valley, paste0(outfolder,"stream_riparian_restoration_removal_mask_NAD83UTM.tif"))  # write output
 
 

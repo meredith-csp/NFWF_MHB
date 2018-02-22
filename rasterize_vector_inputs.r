@@ -6,8 +6,8 @@ library(sf)
 library(sp)
 library(parallel)
 
-outfolder <- "C:/Users/Tyler/Google Drive/NFWF Cross Realm/Data/Rasterized Inputs/"  # folder for rasterized outputs
-template30 <- raster("C:/Users/Tyler/Google Drive/NFWF Cross Realm/Data/Rasterized Inputs/HUC12_zones_30m.tif")  # template to which new rasters should be snapped
+outfolder <- "C:/Users/Tyler/Google Drive/NFWF Cross Realm/Data/Rasterized Inputs NAD83 UTM/"  # folder for rasterized outputs
+template30 <- raster("C:/Users/Tyler/Google Drive/NFWF Cross Realm/Data/Rasterized Inputs NAD83 UTM/HUC12_zones_30m_NAD83UTM.tif")  # template to which new rasters should be snapped
 
 
 
@@ -15,25 +15,25 @@ template30 <- raster("C:/Users/Tyler/Google Drive/NFWF Cross Realm/Data/Rasteriz
 # For line or point layers (must use rasterize)
 
 ### USER INPUTS
-infile <- "C:/Work/SpatialData/NFWF_Cross_Realm/Bridges/National_Bridge_Inventory_(NBI)_Bridges/National_Bridge_Inventory_(NBI)_Bridges_MHB.shp"  # name of shapefile to convert
+infile <- "C:/Work/SpatialData/NFWF_Cross_Realm/NHD_streams_MHB_NAD83UTM.shp"  # name of shapefile to convert
 fieldname <- 1  # name of the field in the shapefile that you want to use to assign raster value; could also just use 1 for constant value
-outfilename <- "bridges.tif"   # what you want to call the output file
+outfilename <- "streams.tif"   # what you want to call the output file
 functionname <- "max" # name of the function to deal with with overlapping features (min, max, mean, first, last, or count)
 ###
 
 # use rasterize (for points and lines)
 vector.sf <- st_read(infile)   # read in shapefile
 # if dimension is XYZM:
-#vector.sf <- st_zm(vector.sf, drop=TRUE, what="ZM")
+vector.sf <- st_zm(vector.sf, drop=TRUE, what="ZM")
 vector.sf <- st_transform(vector.sf, proj4string(template30))# reproject shapefile to match template 
 vector.sp <- as(vector.sf, "Spatial")  # convert to sp object to allow rasterizing
 outraster <- rasterize(x=vector.sp, y=template30, field=fieldname, fun=functionname, na.rm=TRUE, progress="window")
-writeRaster(outraster, paste0(outfolder, outfilename), format="GTiff", prj=TRUE)
+writeRaster(outraster, paste0(outfolder, outfilename), format="GTiff", prj=TRUE, overwrite=TRUE)
 
 # or use fasterize (for polygons)
 vector.sf <- st_read(infile)   # read in shapefile
 vector.sf <- st_transform(vector.sf, proj4string(template30))# reproject shapefile to match template 
-outraster <- fasterize(sf=vector.sf, raster=template30, field=fieldname, fun=functionname, progress="window")
+outraster <- fasterize(sf=vector.sf, raster=template30, field=NULL, fun=functionname)
 writeRaster(outraster, paste0(outfolder, outfilename), format="GTiff", prj=TRUE)
 
 
