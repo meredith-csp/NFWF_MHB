@@ -76,10 +76,10 @@ writeRaster(irrig, paste0(outfolder,"irrigation_adjustment_removal_mask_NAD83UTM
 
 
 
-### Soil health management - mask includes all crop land
+### Soil health management - mask includes all agricultural lands (row crops + pasture/hay)
 crops <- raster(paste0(infolder,"nlcd_2011_NAD83UTM_v3.tif"))   # read in NLCD layer
-crops[crops!=82] <- 0   # set everything that is not crops to 0
-crops[crops==82] <- 1   # set crops to 1
+crops[!crops %in% c(81, 82)] <- 0   # set everything that is not agricultural to 0
+crops[crops %in% c(81, 82)] <- 1   # set crops to 1
 writeRaster(crops, paste0(outfolder,"soil_mgmt_removal_mask_NAD83UTM.tif"), overwrite=TRUE)  # write output
 
 
