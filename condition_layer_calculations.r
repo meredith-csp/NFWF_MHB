@@ -47,7 +47,7 @@ waterbody.10m <- raster::disaggregate(waterbody, fact=3, method="", filename=pas
 hmi <- raster(paste0(infolder,"HMI_90m_NAD83UTM.tif")) # load in hmi
 hmi.10m <- raster::disaggregate(hmi, fact=3, method="", filename=paste0(infolder, "HMI_10m_NAD83UTM.tif"))
 bridge.buffer <- raster(paste0(infolder, "bridges_1km_buffer_NAD83UTM.tif"))
-bridge.buffer.10m <- raster::disaggregate(bridge.buffer, fact=3, method="", filename=paste0(infolder, "bridges_1km_buffer_NAD83UTM_10m.tif"))
+bridge.buffer.10m <- raster::disaggregate(bridge.buffer, fact=3, method="", filename=paste0(infolder, "bridges_1km_buffer_10m_NAD83UTM.tif"))
 roads.1kmbuffer <- raster(paste0(infolder, "decommissionable_roads_1km_buffer_NAD83UTM.tif")) # read in buffered decommissionable roads layer
 roads.1kmbuffer.10m <- raster::disaggregate(roads.1kmbuffer, fact=3, method="", filename=paste0(infolder, "decommissionable_roads_1km_buffer_10m_NAD83UTM.tif"))
 privatecons <- raster(paste0(infolder, "conservation_easement_mask_NAD83UTM.tif"))
@@ -82,15 +82,19 @@ writeRaster(MHB.10m, filename=paste0(infolder, "MHB_10m.tif"))
 
 # Create reversed version of stream biotic condition where poorer condition corresponds to higher value
 stream.biotic <- raster(paste0(infolder,"stream_biotic_condition_10m_NAD83UTM.tif"))  # import stream biotic condition layer
-minval <- cellStats(stream.biotic, stat="min")    # reverse scaling of biotic condition score so poorest condition has highest value
-maxval <- cellStats(stream.biotic, stat="max") # calculate minimum value (for reversing scale)
+minval <- cellStats(stream.biotic, stat="min")    
+maxval <- cellStats(stream.biotic, stat="max") 
 reversed.stream.biotic <- 1 - ((stream.biotic - minval)/(maxval-minval)) # reverse scaling of biotic condition score so poorest condition has highest value
 writeRaster(reversed.stream.biotic, filename=paste0(infolder, "reversed_stream_biotic_condition_10m_NAD83UTM.tif"))
 
 # Create new version of stream CFM shift
-
-
-
+stream.cfm <- raster(paste0(infolder,"stream_CFM_shift_10m_NAD83UTM.tif"))  # import stream cfm layer (value represents shift in Julian day of CFM - all negative values because all shifts are predicted to be earlier)
+cfm.days.early <- abs(stream.cfm) # convert to positive values - now values represent the number of days by which CFM is predicted to come earlier in the year
+writeRaster(cfm.days.early, paste0(infolder,"stream_CFM_days_early_10m_NAD83UTM.tif"))
+minval <- cellStats(cfm.days.early, stat="min")
+maxval <- cellStats(cfm.days.early, stat="max")
+reversed.cfm.days.early <- 1 - ((cfm.days.early - minval)/(maxval-minval)) # reverse scaling so that higher values = smallest predicted shift earlier = highest conservation value
+writeRaster(reversed.cfm.days.early, paste0(infolder,"reversed_stream_CFM_days_early_10m_NAD83UTM.tif"))
 
 
 
