@@ -581,7 +581,7 @@ meanval <- cellStats(ag.biotic, stat="mean", na.rm=TRUE)  # calculate mean bioti
 keep.ag.biotic <- ag.biotic
 keep.ag.biotic[keep.ag.biotic<meanval] <- NA  # make a copy of stream biotic condition that will only include streams to restore (keepers)
 zones.10m.crop <- crop(zones.10m, keep.ag.biotic)  # crop by extent of smaller raster
-zonal.mat <- zonal(x=keep.irrig.biotic, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
+zonal.mat <- zonal(x=keep.ag.biotic, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
 zonal.mat[zonal.mat==0] <- NA  # set zones with sum=0 to NA, since we don't want to include these in prioritization as they have no opportunity for action
 original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
