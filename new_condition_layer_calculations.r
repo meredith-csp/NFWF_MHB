@@ -12,9 +12,9 @@ zones.90m <- raster(paste0(infolder, "HUC12_zones_90m_NAD83UTM.tif"))
 
 # Test for differences in extents of rasters
 e1 <- extent(zones.10m)
-e2 <- extent(keep.ag.biotic)
-plot(e1, col="blue")
-plot(e2, col="red", add=TRUE)
+e2 <- extent(keep.biotic)
+plot(e1, col="blue", add=TRUE)
+plot(e2, col="red")
 compareRaster(zones.10m, roads.vb)
 
 
@@ -647,8 +647,8 @@ gc() # garbage collector to free up memory
 cfm.early <- raster(paste0(infolder,"stream_CFM_days_early_10m_NAD83UTM.tif"))  # import CFM shift layer (# days earlier by 2040)
 meanval <- cellStats(cfm.early, stat="mean", na.rm=TRUE)  # calculate mean CFM shift for streams
 keep.cfm <- reclassify(cfm.early, rcl=matrix(c(0, meanval, NA), ncol=3), right=FALSE)   # keep only those streams with higher than average early shift (good candidates for restoration)
-zones.10m.crop <- crop(zones.10m, keep.cfm)  # crop by extent of smaller raster
-zonal.mat <- zonal(x=keep.cfm, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
+keep.cfm.crop <- crop(keep.cfm, zones.10m)  # crop by extent of smaller raster
+zonal.mat <- zonal(x=keep.cfm.crop, z=zones.10m, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
 zonal.mat[zonal.mat==0] <- NA  # set zones with sum=0 to NA, since we don't want to include these in prioritization as they have no opportunity for action
 original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
@@ -696,8 +696,8 @@ gc() # garbage collector to free up memory
 reversed.stream.biotic <- raster(paste0(infolder,"reversed_stream_biotic_condition_10m_NAD83UTM.tif"))  # import stream biotic condition layer, reversed so that poorer condition = higher value
 meanval <- cellStats(reversed.stream.biotic, stat="mean", na.rm=TRUE)  # calculate mean biotic value for streams
 keep.biotic <- reclassify(reversed.stream.biotic, rcl=matrix(c(0, meanval, NA), ncol=3), right=FALSE)  # keep those streams with poorer than average biotic condition (good restoration candidates)
-zones.10m.crop <- crop(zones.10m, keep.biotic)  # crop by extent of smaller raster
-zonal.mat <- zonal(x=keep.biotic, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
+keep.biotic.crop <- crop(keep.biotic, zones.10m)  # crop by extent of smaller raster
+zonal.mat <- zonal(x=keep.biotic.crop, z=zones.10m, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
 zonal.mat[zonal.mat==0] <- NA  # set zones with sum=0 to NA, since we don't want to include these in prioritization as they have no opportunity for action
 original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
@@ -772,7 +772,7 @@ gc() # garbage collector to free up memory
 ### Conifer/shrub control --> Upland veg
 # Goal: Select HUC units with the greatest area of upland area near an edge between grassland and forest or shrub 
 uplands <- raster(paste0(infolder, "uplands_10m_NAD83UTM.tif"))  # import uplands layer
-edge <- raster(paste0(infolder, "               "))
+edge <- raster(paste0(infolder, "encroachment_500m_buffer_10m_NAD83UTM.tif"))  # import grassland edge layer
 edge.uplands <- uplands * edge   # keep only those pixels that are both  and grass/forest/shrub edge
 zones.10m.crop <- crop(zones.10m, edge.uplands)  # crop by extent of smaller raster
 zonal.mat <- zonal(x=edge.uplands, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit (index of area)
@@ -790,7 +790,7 @@ gc() # garbage collector to free up memory
 ### Conifer/shrub control --> grassland connectivity
 # Goal: Select HUC units that contain the high centrality grassland flowlines near an edge between grassland and forest or shrub
 grass.centrality <- raster(paste0(infolder, "grassland_centrality_flowlines_10m_NAD83UTM.tif"))  # import grassland centrality layer
-edge <- raster(paste0(infolder, "               "))
+edge <- raster(paste0(infolder, "encroachment_500m_buffer_10m_NAD83UTM.tif"))  # import grassland edge layer
 edge.centrality <- grass.centrality * edge   # keep only those flowlines that are within valley bottoms
 zones.10m.crop <- crop(zones.10m, edge.centrality)  # crop by extent of smaller raster
 zonal.mat <- zonal(x=edge.centrality, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
@@ -803,9 +803,3 @@ outfilename <- "encroachControl_grassCentrality_condition_NAD83UTM.tif"  # name 
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
-
-
-
-
-
-
