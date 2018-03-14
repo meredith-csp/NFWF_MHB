@@ -1,7 +1,6 @@
 ---
-title: "Conservation Prioritization Tool: Example with Tutorial Data"
-#author: "Meredith McClure"
-date: "last updated 01/04/2017"
+title: "Conservation Prioritization Tool for the Missouri Headwaters Basin"
+date: "last updated 03/01/2018"
 output: html_notebook
 runtime: shiny
 ---
@@ -11,11 +10,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ***
-**This tool is designed to help identify priority subwatersheds where there is potential for a conservation action of interest to provide the greatest net benefits to multiple conservation targets in the Missouri Headwaters Basin. 
-Start by selecting your conservation action of interest, then assign weights to conservation targets that are linked to that action, based on their relative importance to you. When the prioritization process is finished, explore the results using the interactive map and plots.**
+**This tool is designed to help identify priority subwatersheds in the Missouri Headwaters Basin where there is potential for a conservation action of interest to provide the greatest net benefits to multiple conservation targets. 
+Start by selecting your conservation action of interest, then assign weights to conservation targets that are linked to that action, based on their relative importance to you. When the prioritization process is finished, you can use the interactive map and plots to explore the results.**
 
 ***
-*This custom decision support tool was developed by [The Center for Large Landscape Conservation](http://www.largelandscapes.org) and [Conservation Science Partners](http://www.csp-inc.org), and was funded by [The National Fish & Wildlife Foundation](http://www.nfwf.org). The prioritization is run using [Zonation 4.0](https://www.helsinki.fi/en/researchgroups/metapopulation-research-centre/software#section-14300) and the [zonator](https://github.com/cbig/zonator) package for R.*
+*This custom decision support tool was developed by [The Center for Large Landscape Conservation](http://www.largelandscapes.org) and [Conservation Science Partners](http://www.csp-inc.org), with funding from [The National Fish & Wildlife Foundation](http://www.nfwf.org). The prioritization is run using [Zonation 4.0](https://www.helsinki.fi/en/researchgroups/metapopulation-research-centre/software#section-14300) and an adaptation of the [zonator](https://github.com/cbig/zonator) package for R.*
 
 ***
 
@@ -24,12 +23,14 @@ Start by selecting your conservation action of interest, then assign weights to 
 ```{r include=FALSE}
 if (!require("pacman")) install.packages("pacman",repos = "http://cran.us.r-project.org")
   pacman::p_load(zonator, raster, rgdal, leaflet)
-source('E:/Projects/NFWF_IntegratedLI/code/R/NFWF_MHB/create_zproject_rev.R')  
+source('create_zproject_rev.R')  
 ```
 
 ```{r globalfiles, echo=FALSE, warning=FALSE}
 targ.summ<-read.csv("runs/data/actiontargets.csv",header=T)
 act.lyrs<-read.csv("runs/data/actionlayers.csv",header=T)
+mhb <- shapefile("runs/data/MissouriHeadwaters_HUC6/MissouriHeadwaters_HUC6.shp")
+huc12 <- shapefile("runs/data/MissouriHeadwaters_HUC12/MissouriHeadwaters_HUC12.shp")
 ```
 
 ```{r eruptions, echo=FALSE, warning=TRUE}
@@ -39,14 +40,15 @@ fluidPage(sidebarLayout(
       textInput("run.name","Give your prioritization a name:","e.g., 'MyAction_Run1'"),
   
       radioButtons("action.sel", "Select Action of Interest:",
-                   c("Conservation easement" = "option1",
+                   c("Private land protection" = "option1",
                      "Widen road culverts/bridges" = "option2",
                      "Decommission Roads" = "option3",
                      "Reduce grazing pressure" = "option4",
                      "Switch to flood irrigation" = "option5",
                      "Manage soil health" = "option6",
                      "Stream/riparian restoration" = "option7",
-                     "Prescribed fire/thinning" = "option8"
+                     "Prescribed fire/thinning" = "option8",
+                     "Encroachment prevention" = "option9"
                     )
       )
     ),
@@ -64,8 +66,12 @@ fluidPage(sidebarLayout(
       actionButton("run.tool", "Run prioritization"),
       textOutput("please.wait"),
       textOutput("save.error")
+    ),
+    wellPanel(
+      actionButton("check.stat","Check run status"),
+      textOutput("stat.running"),
+      textOutput("stat.done")
     )
-    #Add 'check status' button: if files don't exist, message, else, show maps/plots
   ),
   
   mainPanel(
@@ -80,7 +86,7 @@ fluidPage(sidebarLayout(
 )
 
 output$wt.sel <- renderUI({
-      targets<-targ.summ[targ.summ[,input$action.sel]==1,"name"]
+      targets<-targ.summ[targ.summ[,input$action.sel]!=0,"name"]
       lapply(1:length(targets), function(i) {
         if(length(input$action.sel)==0) {output$wt.sel0 <- renderText({" "})} else {
         sliderInput(inputId=paste0("targ",i),label=targets[i],min=0,max=1,value=0,step=0.1)}
@@ -121,19 +127,16 @@ observeEvent(input$load.inputs,{
     create_zproject_rev(name="runs",dir=".",variants=variant_name,
                     spp_template_dir=input_raster_dir,spp_file_pattern="*.tif",   
                     overwrite=T,
-                    weight=c(input$targ1,input$targ2,input$targ3,input$targ4))
+                    weight=c(input$targ1,input$targ2,input$targ3,input$targ4,input$targ5,input$targ6,input$targ7,input$targ8))
 
-    dat<-list("Settings" = list("removal rule"=2, "warp factor"=50, "edge removal"=1, 
-                            "use planning unit layer"=1, "planning unit layer file"=paste0(getwd(), .Platform$file.sep,                                                   "data",.Platform$file.sep,"ZonationData",.Platform$file.sep,"huc12.tif"),
+    dat<-list("Settings" = list("removal rule"=2, "edge removal"=1, 
+                            "use planning unit layer"=1, "planning unit layer file"=paste0(getwd(), .Platform$file.sep,"runs",.Platform$file.sep,"data",.Platform$file.sep,"ZonationData",.Platform$file.sep,"HUC12_zones_30m_NAD83UTMint.tif"),
                             "use cost"=0, 
-                            "use mask"=1, "mask file"=paste0(getwd(), .Platform$file.sep,
-                                "data",.Platform$file.sep,"ActionMasks",.Platform$file.sep,
-                                act.lyrs[act.lyrs[,'label']==input$action.sel,"masklyr"]),
-                            "use tree connectivity"=1), "tree connectivity file"=paste0(getwd(), .Platform$file.sep,
-                                "data",.Platform$file.sep,"ZonationData",.Platform$file.sep,"MHB_tree_file.txt"))
+                            "use mask"=0, #"mask file"=paste0(getwd(), .Platform$file.sep, "runs",.Platform$file.sep,"data", .Platform$file.sep,"ActionMasks", .Platform$file.sep, act.lyrs[act.lyrs[,'label']==input$action.sel, "masklyr"]),
+                            "use tree connectivity"=0)) #, "tree connectivity file"=paste0(getwd(), .Platform$file.sep,"data", .Platform$file.sep, "ZonationData", .Platform$file.sep, "MHB_tree_file.txt"))
     write_dat(dat,paste0("./runs/",variant_name,"/",variant_name,".dat"),overwrite=T)
     
-    output$save.confirm <- renderText({"Your settings have been saved. Now run it!"})
+    output$save.confirm <- renderText ({"Your settings have been saved. Now run it!"})
   })  
   
   # Run Zonation from shell upon user input
@@ -142,8 +145,7 @@ observeEvent(input$load.inputs,{
     variant_name<-input$run.name
 
     if (file.exists(paste0("./runs/",variant_name,".bat"))) {
-      print(getwd())
-      shell.exec(paste0("runs\\",   #relative path issue? opening shell then not finding file?
+      shell.exec(paste0("runs\\",  
                         variant_name,".bat"))
       output$please.wait<-renderText({paste("Please wait while your prioritization is run. Your results will appear below and will be saved to 'runs/",input$run.name,"'.",sep="")})
     }
@@ -151,10 +153,23 @@ observeEvent(input$load.inputs,{
       output$save.error <- renderText({"You must first select and save your run settings"})
     }
   })
+    
+  # Give run status update on request
+  observeEvent(input$check.stat,{
+    project_path<-file.path("runs")
+    variant_name<-input$run.name
+
+    if (file.exists(paste0("./runs/",variant_name,"/",variant_name,".ABF_ME.wrscr.compressed.tif"))) {
+      output$stat.done<-renderText({paste("Your prioritization is done! Explore your results below.",sep="")})
+    }
+    else{
+      output$stat.running <- renderText({"Your prioritization is still in progress. Please wait."})
+    }
+  })
 ```
 
 ***
 
+*Contact: [Tyler Creech](tyler@largelandscapes.org), [Meredith McClure](meredith@csp-inc.org)*
 
-
-
+***
