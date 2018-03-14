@@ -41,14 +41,14 @@ fluidPage(sidebarLayout(
   
       radioButtons("action.sel", "Select Action of Interest:",
                    c("Private land protection" = "option1",
-                     "Widen road culverts/bridges" = "option2",
+                     "Upgrade culverts/bridges" = "option2",
                      "Decommission Roads" = "option3",
                      "Reduce grazing pressure" = "option4",
-                     "Switch to flood irrigation" = "option5",
+                     "Adjust irrigation practices" = "option5",
                      "Manage soil health" = "option6",
                      "Stream/riparian restoration" = "option7",
-                     "Prescribed fire/thinning" = "option8",
-                     "Encroachment prevention" = "option9"
+                     "Fuels management" = "option8",
+                     "Encroachment control" = "option9"
                     )
       )
     ),
@@ -86,7 +86,7 @@ fluidPage(sidebarLayout(
 )
 
 output$wt.sel <- renderUI({
-      targets<-targ.summ[targ.summ[,input$action.sel]!=0,"name"]
+      targets<-targ.summ[targ.summ[,input$action.sel]==1,"name"]
       lapply(1:length(targets), function(i) {
         if(length(input$action.sel)==0) {output$wt.sel0 <- renderText({" "})} else {
         sliderInput(inputId=paste0("targ",i),label=targets[i],min=0,max=1,value=0,step=0.1)}
@@ -122,12 +122,13 @@ observeEvent(input$load.inputs,{
 
     project_path<-file.path("MHB_MarkdownSetup")
     variant_name<-input$run.name
-    input_raster_dir<-"runs/data/TargetCondition"
+    potential_wts<-c(input$targ1,input$targ2,input$targ3,input$targ4,input$targ5,input$targ6,input$targ7)
+    input_raster_dir<-paste0("runs/data/TargetCondition/",unique(targ.summ[targ.summ[,input$action.sel]==1,"dir"]))   
     
     create_zproject_rev(name="runs",dir=".",variants=variant_name,
                     spp_template_dir=input_raster_dir,spp_file_pattern="*.tif",   
                     overwrite=T,
-                    weight=c(input$targ1,input$targ2,input$targ3,input$targ4,input$targ5,input$targ6,input$targ7,input$targ8))
+                    weight=potential_wts[1:length(targ.summ[targ.summ[,input$action.sel]==1,"name"])])  #not aligning explicitly with specific targets
 
     dat<-list("Settings" = list("removal rule"=2, "edge removal"=1, 
                             "use planning unit layer"=1, "planning unit layer file"=paste0(getwd(), .Platform$file.sep,"runs",.Platform$file.sep,"data",.Platform$file.sep,"ZonationData",.Platform$file.sep,"HUC12_zones_30m_NAD83UTMint.tif"),
@@ -158,8 +159,9 @@ observeEvent(input$load.inputs,{
   observeEvent(input$check.stat,{
     project_path<-file.path("runs")
     variant_name<-input$run.name
-
-    if (file.exists(paste0("./runs/",variant_name,"/",variant_name,".ABF_ME.wrscr.compressed.tif"))) {
+    
+    output<-list.files(path = paste0("./runs/",variant_name), pattern = "wrscr.compressed.tif")
+    if (length(output)>0) {
       output$stat.done<-renderText({paste("Your prioritization is done! Explore your results below.",sep="")})
     }
     else{
