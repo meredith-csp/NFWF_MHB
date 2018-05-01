@@ -87,8 +87,8 @@ Row {.tabset data-height=850}
     observeEvent(input$action.sel, ({
         targetIDs<-targ.summ[targ.summ[,input$action.sel]==1,"abbv"]
         targetNames<-as.vector(targ.summ[targ.summ[,input$action.sel]==1,"name"])
-        #maskLyr<-as.name(act.lyrs[act.lyrs$label==input$action.sel,"maskid"])
-        maskLyr<-shapefile(paste0("runs/data/ActionMasks/",act.lyrs[act.lyrs$label==input$action.sel,"masklyr"]))
+        #maskLyr<-shapefile(paste0("runs/data/ActionMasks/",act.lyrs[act.lyrs$label==input$action.sel,"masklyr"]))
+        maskLyr<-raster(paste0("runs/data/ActionMasks/",act.lyrs[act.lyrs$label==input$action.sel,"masklyr"]))
         targCond<-list()
         for (i in 1:length(targetIDs)) {
           targCond[[i]]<-huc12[,as.character(targetIDs[i])]
@@ -107,8 +107,9 @@ Row {.tabset data-height=850}
               }
               return(.)
             } %>%
-            addPolygons(data=maskLyr, color = "darkgray", weight = 1, opacity = 1,
-                            fillOpacity = 1, fillColor = "gray", group="Action Footprint") %>%
+            #addPolygons(data=maskLyr, color = "darkgray", weight = 1, opacity = 1,
+            #                fillOpacity = 1, fillColor = "gray", group="Action Footprint") %>%
+            addRasterImage(maskLyr, colors=rpal, opacity=0.9, group="Result", maxBytes=6000) %>%
             addLayersControl(baseGroups = c("Topographical", "Satellite"),
                             overlayGroups = c(targetNames,"Action Footprint"),       
                             options = layersControlOptions(collapsed = FALSE)) %>%
@@ -139,7 +140,7 @@ Row {.tabset data-height=850}
         leafletProxy("map") %>%
           clearControls() %>%
           addTiles() %>%
-          addRasterImage(result, colors=rpal, opacity=0.9, group="Result", maxBytes=15000) %>%
+          addRasterImage(result, colors=rpal, opacity=0.9, group="Result", maxBytes=6000) %>%
           addLegend("bottomright",pal = rpal, values = 0:1, opacity = 0.9, 
                     labFormat = function(type, cuts, p) { 
                           n = length(cuts) 
