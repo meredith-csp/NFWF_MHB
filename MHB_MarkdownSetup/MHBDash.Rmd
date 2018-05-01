@@ -6,6 +6,21 @@ output:
 runtime: shiny
 ---
 
+```{r}
+#####################################################################
+#                                                                   #
+#                                                                   #
+#   TO RUN THIS TOOL, HIT 'Run Document' NEXT TO THE GREEN ARROW    #
+#                  IN THE HEADER OF THIS TAB.                       #
+#                                                                   #
+#                                                                   #
+#   (There is no need to understand or interact with the code       #
+#               below - please do not modify it!)                   #
+#                                                                   #
+#                                                                   #
+#####################################################################
+```
+
 <style>                     
 .navbar {
   background-color:#2F4F4F;
@@ -16,11 +31,13 @@ color:white!important;
 }
 </style>  
 
-```{r global, include=FALSE}
+```{r global, include=F}
+#Load packages
 if (!require("pacman")) install.packages("pacman",repos = "http://cran.us.r-project.org")
   pacman::p_load(rmarkdown, shinydashboard, zonator, raster, rgdal, leaflet, RColorBrewer)
 source('create_zproject_rev.R')  
-  
+
+#Load common data
 targ.summ<-read.csv("runs/data/actiontargets.csv",header=T)
 act.lyrs<-read.csv("runs/data/actionlayers.csv",header=T)
 mhb <- shapefile("runs/data/MissouriHeadwaters_HUC6/MissouriHeadwaters_HUC6.shp")
@@ -46,19 +63,37 @@ Inputs {.sidebar}
                      "Fuels management" = "option8",
                      "Encroachment control" = "option9")
                   )
-
+    
     #REACTIVE USER INPUT (SLIDERS): WEIGHT SELECTION
     h5("Set weights for each target:")
-    uiOutput("wt.sel")
+    uiOutput("wt.opt")
         
-    #REACTIVELY RENDER SLIDERS: WEIGHT OPTIONS DEPENDENT ON ACTION SELECTION
-    output$wt.sel <- renderUI({
+      #REACTIVELY RENDER SLIDERS: WEIGHT OPTIONS DEPENDENT ON ACTION SELECTION
+      output$wt.opt <- renderUI({
         targets<<-targ.summ[targ.summ[,input$action.sel]==1,"name"]
         lapply(1:length(targets), function(i) {
-            if(length(input$action.sel)==0) {output$wt.sel0 <- renderText({" "})} else {
+            if(length(input$action.sel)==0) {output$wt.opt <- renderText({" "})} else {
               sliderInput(inputId=paste0("targ",i),label=targets[i],min=0,max=1,value=0,step=0.1)}
             })
-    })
+      })
+      
+    #REACTIVE USER INPUT (DROPDOWN MENU): DIRECTIONAL CONNECTIVITY SETTING
+    uiOutput("dirconn.opt")
+
+      #REACTIVELY RENDER MENU: DIRECTIONAL CONNECTIVITY OPTIONS DEPENDENT ON APPLICABLE TARGETS
+      observeEvent(input$action.sel,{
+        output$dirconn.opt <-renderUI({
+          print(sum(targets %in% c("Stream health","Normative flow regime")))
+          if(sum(targets %in% c("Stream health","Normative flow regime"))==0) {
+            output$dirconn.opt <- renderText({" "})} else {
+            selectInput("dirconn.sel", "Consider downstream benefits for stream target(s)?",
+                    c("No" = "1",
+                     "Yes (small benefits)" = "2",
+                     "Yes (large benefits)" = "3")
+                    )
+            } 
+        })
+      })
 ```
 
 Row {.tabset data-height=850}
@@ -87,8 +122,7 @@ Row {.tabset data-height=850}
     observeEvent(input$action.sel, ({
         targetIDs<-targ.summ[targ.summ[,input$action.sel]==1,"abbv"]
         targetNames<-as.vector(targ.summ[targ.summ[,input$action.sel]==1,"name"])
-        #maskLyr<-shapefile(paste0("runs/data/ActionMasks/",act.lyrs[act.lyrs$label==input$action.sel,"masklyr"]))
-        maskLyr<-raster(paste0("runs/data/ActionMasks/",act.lyrs[act.lyrs$label==input$action.sel,"masklyr"]))
+        #maskLyr<-raster(paste0("runs/data/ActionMasks/",act.lyrs[act.lyrs$label==input$action.sel,"masklyr"]))
         targCond<-list()
         for (i in 1:length(targetIDs)) {
           targCond[[i]]<-huc12[,as.character(targetIDs[i])]
@@ -107,9 +141,7 @@ Row {.tabset data-height=850}
               }
               return(.)
             } %>%
-            #addPolygons(data=maskLyr, color = "darkgray", weight = 1, opacity = 1,
-            #                fillOpacity = 1, fillColor = "gray", group="Action Footprint") %>%
-            addRasterImage(maskLyr, colors=rpal, opacity=0.9, group="Result", maxBytes=6000) %>%
+            #addRasterImage(maskLyr, colors=pal, opacity=0.9, group="Action Footprint", maxBytes=6000) %>%
             addLayersControl(baseGroups = c("Topographical", "Satellite"),
                             overlayGroups = c(targetNames,"Action Footprint"),       
                             options = layersControlOptions(collapsed = FALSE)) %>%
@@ -226,20 +258,24 @@ Row {data-height=150}
 
       project_path<-file.path("MHB_MarkdownSetup")
       variant_name<-input$run.name
-      targWts<-unlist(inputList[grep("targ", names(inputList))])[1:length(targets)]
       input_raster_dir<-paste0("runs/data/TargetCondition/",
                                unique(targ.summ[targ.summ[,input$action.sel]==1,"dir"]))   
     
+      targWts<-unlist(inputList[grep("targ", names(inputList))])[1:length(targets)]
+      print(targWts)
+      targNames<-as.vector(targ.summ[targ.summ[,input$action.sel]==1,"name"])
+      targCurves<-ifelse(targNames %in% c("Stream health","Normative flow regime"),as.numeric(input$dirconn.sel),1)
+      
       create_zproject_rev(name="runs",dir=".",variants=variant_name,
                         spp_template_dir=input_raster_dir,spp_file_pattern="*.tif",   
                         overwrite=T,
                         weight=targWts, 
-                        bqp=3,#upstream curve function
+                        bqp=targCurves, #upstream curve function
                         bqp_p=1) #downstream curve function 
-    
+      
       dat<-list("Settings" = list("removal rule"=2, "edge removal"=1, 
                     "use planning unit layer"=1, 
-                    "planning unit layer file"=paste0("runs/data/ZonationData/HUC12_zones_90m_NAD83UTM.tif"), #.Platform$file.sep 
+                    "planning unit layer file"=paste0("runs/data/ZonationData/HUC12_zones_90m_NAD83UTM.tif"),  
                     "use cost"=0, 
                     "use mask"=0, 
                     "use tree connectivity"=1, 
