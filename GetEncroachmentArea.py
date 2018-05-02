@@ -35,7 +35,7 @@ def getEncroachArea(encrType,encrVals,bufferDist,impVals,impType):
 # Variable definitions:
 encrType = ("conif","conifshrub")
 encrVals = ("42 43 1", "42 43 1; 51 52 1")
-impVals = ("42 43 1; 51 52 1","42 43 1; 51 52 1; 71 1")
+impVals = ("51 52 1","71 1")
 impType = ("shrub","grass")
 bufferDist = "500"
 
