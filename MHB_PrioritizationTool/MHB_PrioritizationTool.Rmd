@@ -1,0 +1,319 @@
+---
+title: "Missouri Headwaters Basin Cross-Realm Management Prioritization Tool"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+runtime: shiny
+---
+
+```{r}
+#####################################################################
+#                                                                   #
+#                                                                   #
+#   TO RUN THIS TOOL, HIT 'Run Document' NEXT TO THE GREEN ARROW    #
+#                  IN THE HEADER OF THIS TAB.                       #
+#                                                                   #
+#                                                                   #
+#          (There is no need to interact with the code              #
+#               below - please do not modify it!)                   #
+#                                                                   #
+#                                                                   #
+#####################################################################
+```
+
+<style>                     
+.navbar {
+  background-color:#2F4F4F;
+  border-color:white;
+}
+.navbar-brand {
+color:white!important;
+}
+</style>  
+
+```{r global, include=FALSE}
+#Load packages
+if (!require("pacman")) install.packages("pacman",repos = "http://cran.us.r-project.org")
+  pacman::p_load(rmarkdown, flexdashboard, zonator, raster, rgdal, rgeos, leaflet, mapview, RColorBrewer) #shinydashboard, 
+source('create_zproject_rev.R')  
+
+#Load common data
+targ.summ<-read.csv("runs/data/actiontargets.csv",header=T)
+act.lyrs<-read.csv("runs/data/actionlayers.csv",header=T)
+mhb <- shapefile("runs/data/MissouriHeadwaters_HUC6/MissouriHeadwaters_HUC6.shp")
+huc12 <- shapefile("runs/data/MissouriHeadwaters_HUC12/MissouriHeadwaters_HUC12_attr.shp")
+```
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+```{r userInputs}
+    #USER INPUT (TEXT): NAME RUN
+    textInput("run.name","Name your prioritization run:","MyAction_Run1")
+  
+    #USER INPUT (DROPDOWN MENU): ACTION SELECTION
+    selectInput("action.sel", "Select Action of Interest:",
+                    c("Private land protection" = "option1",
+                     "Upgrade culverts/bridges" = "option2",
+                     "Decommission Roads" = "option3",
+                     "Reduce grazing pressure" = "option4",
+                     "Adjust irrigation practices" = "option5",
+                     "Manage soil health" = "option6",
+                     "Stream/riparian restoration" = "option7",
+                     "Fuels management" = "option8",
+                     "Encroachment control" = "option9")
+                  )
+    
+    #REACTIVE USER INPUT (SLIDERS): WEIGHT SELECTION
+    h5("Set weights for each target:")
+    uiOutput("wt.opt")
+        
+      #REACTIVELY RENDER SLIDERS: WEIGHT OPTIONS DEPENDENT ON ACTION SELECTION
+      output$wt.opt <- renderUI({
+        targets<<-targ.summ[targ.summ[,input$action.sel]==1,"name"]
+        if(length(input$action.sel)>0) {
+          lapply(1:length(targets), function(i) {
+              sliderInput(inputId=paste0("targ",i),label=targets[i],min=0,max=1,value=0,step=0.1)}
+            )}
+        })
+      
+    #REACTIVE USER INPUT (DROPDOWN MENU): DIRECTIONAL CONNECTIVITY SETTING
+    uiOutput("dirconn.opt")
+
+      #REACTIVELY RENDER MENU: DIRECTIONAL CONNECTIVITY OPTIONS DEPENDENT ON APPLICABLE TARGETS
+      observeEvent(input$action.sel,{
+          output$dirconn.opt <-renderUI({
+            if(sum(targets %in% c("Stream health","Normative flow regime"))>0) {
+              selectInput("dirconn.sel","Consider downstream benefits for stream target(s)?",
+                    c("No benefits" = "1",
+                     "Small benefits" = "2",
+                     "Moderate benefits" = "3",
+                     "Large benefits" = "4")
+                    )}
+          })
+      })
+```
+
+Row {.tabset data-height=850}
+-----------------------------------------------------------------------
+
+### Explore the Map
+    
+```{r mapInterface}
+    #CREATE MAP OBJECT
+    tags$style(type = "text/css", "#map {height: calc(100vh) !important;}")
+    leafletOutput('map', width=800, height=600)
+    #bounds<-extent(-113.9473,-109.5527,44.24289,46.55711)
+    bounds<-extent(-112.8486,-110.6514,44.82144,45.97856)
+
+    #RENDER MAP: BASE
+    output$map <- renderLeaflet({
+      leaflet(mhb,options = leafletOptions(minZoom = 7)) %>%
+        addProviderTiles("Esri.WorldTopoMap", group="Topographical") %>%
+        addProviderTiles("Esri.WorldImagery", group="Satellite") %>%
+        addPolygons(data=huc12, fill = FALSE, color="#404040", weight = 1, opacity = 1, group="Boundaries") %>%
+        addPolygons(fill = FALSE, color = "black", weight = 3, opacity = 1, group="Boundaries") %>%
+        setView(lng = -111.75, lat = 45.4,  zoom = 8) %>%
+        addHomeButton(ext=bounds, layer.name = "Full Extent", position = "topleft", add = TRUE)
+    })
+       
+    #REACTIVELY ADD MAP LAYERS: CONDITION LAYERS DEPENDENT ON ACTION SELECTION
+    pal <- colorNumeric(palette = c("white","darkslategray"), domain = 0:1)
+
+    observeEvent(input$action.sel, ({
+        targetIDs<-targ.summ[targ.summ[,input$action.sel]==1,"abbv"]
+        targetNames<<-as.vector(targ.summ[targ.summ[,input$action.sel]==1,"name"]) 
+        maskLyr<-shapefile(paste0("runs/data/ActionMasks/",act.lyrs[act.lyrs$label==input$action.sel,"masklyr_shp"]))
+
+        targCond<-list()
+        for (i in 1:length(targetIDs)) {
+          targCond[[i]]<-huc12[,as.character(targetIDs[i])]
+          names(targCond[[i]])<-"targ"
+        }
+    
+        leafletProxy("map") %>%
+            clearControls() %>%
+            clearGroup(c("Action Footprint",targ.summ[targ.summ[,"option1"]==1,"name"])) %>%
+            hideGroup(c("Action Footprint",targetNames)) %>%
+            addTiles() %>%
+            {
+              for(i in 1:length(targCond)){
+                . <- addPolygons(.,data=targCond[[i]], color = "#404040", weight = 1, opacity = 1, 
+                                 fillOpacity = 0.75, fillColor = ~pal(targ), group=targetNames[i])
+              }
+              return(.)
+            } %>%
+            addPolygons(data = maskLyr, stroke = FALSE, fill = TRUE,  
+                        fillColor = "black", fillOpacity = 0.75, group = "Action Footprint") %>%            
+            addLayersControl(baseGroups = c("Topographical", "Satellite"),
+                            overlayGroups = c("Action Footprint",targetNames),       
+                            options = layersControlOptions(collapsed = FALSE)) %>%
+            showGroup(c(targetNames[1])) %>%
+            addLegend("bottomright", pal = colorNumeric(pal,domain=0:1,reverse=T), values=0:1, opacity = 0.75, 
+                      labFormat = function(type, cuts, p) { 
+                          n = length(cuts) 
+                          cuts[1] = "High" 
+                          for (i in 2:(n-1)) {cuts[i] = ""} 
+                          cuts[n] = "Low" 
+                          paste0(cuts[-n], cuts[-1])}, 
+                      title = "Conservation Target <br> Opportunity Value")
+      })
+      )
+
+    #REACTIVELY ADD MAP LAYERS: ZONATION OUTPUT DEPENDENT ON CHECK STATUS
+    observeEvent(input$check.stat,{
+      project_path<-file.path("runs")
+      variant_name<-input$run.name
+    
+      outputFile<-list.files(path = paste0("./runs/",variant_name), pattern = "rank.compressed.tif",full.names=T,recursive=T) 
+      if (isTRUE(file.exists(outputFile))) {
+        output$stat.done<-renderText({"Your prioritization is done! Please wait a moment for the map to load."})
+        
+        #Read result and extract result to huc12 polygons by values at centroids
+        result<-raster(outputFile)
+          huc12c <- suppressWarnings(extract(result, huc12c, sp=TRUE))
+          huc12@data <- cbind(huc12@data, huc12c@data[ncol(huc12c@data)])    
+          names(huc12@data)[ncol(huc12@data)] <- "result"
+          
+        rpal<-colorNumeric(palette = "BuPu", domain = 0:1)
+          
+        leafletProxy("map") %>%
+          clearControls() %>%
+          addTiles() %>%
+          addPolygons(data=huc12, color = "#404040", weight = 1, opacity = 1, 
+                                 fillOpacity = 0.75, fillColor = ~rpal(result), group="Prioritization Result") %>%
+          addLayersControl(baseGroups = c("Topographical", "Satellite"),
+                            overlayGroups = c("Prioritization Result",targetNames,"Action Footprint"),       
+                            options = layersControlOptions(collapsed = FALSE)) %>%
+          addLegend("bottomright",pal = colorNumeric(rpal,domain=0:1,reverse=T), values = 0:1, opacity = 0.75, 
+                    labFormat = function(type, cuts, p) { 
+                          n = length(cuts) 
+                          cuts[1] = "High" 
+                          for (i in 2:(n-1)) {cuts[i] = ""} 
+                          cuts[n] = "Low" 
+                          paste0(cuts[-n], cuts[-1])},
+                    title = "Conservation <br> Priority Rank")
+    }
+    else{
+      output$stat.running<-renderText({"Your prioritization is still running. Please wait."})
+    }
+    
+  })
+```
+
+### Get More Information
+
+#### Getting Started
+
+This tool is designed to help identify priority subwatersheds in the Missouri Headwaters Basin where there is potential for a conservation action of interest to provide the greatest net benefits to multiple conservation targets in both terrestrial and freshwater realms. 
+
+Start by selecting your conservation action of interest, then assign weights to conservation targets that are linked to that action, based on their relative importance to you. When the prioritization process is finished, you can use the interactive map to explore the results.
+
+***
+
+#### Resources
+
+For further instructions, more information on the input data and prioritization algorithm, and other supporting information, view or download the [full documentation](https://drive.google.com/open?id=1sOPr7kSgzBG8BNh66u3jwUP-ackppJagv9uay6Rxo3Q). 
+
+***
+
+#### Credits
+
+This custom decision support tool was developed by [The Center for Large Landscape Conservation](http://www.largelandscapes.org) and [Conservation Science Partners](http://www.csp-inc.org), with funding from [The National Fish & Wildlife Foundation](http://www.nfwf.org). The prioritization is run using [Zonation 4.0](https://www.helsinki.fi/en/researchgroups/metapopulation-research-centre/software#section-14300) and an adaptation of the [zonator](https://github.com/cbig/zonator) package for R.
+
+Contact: [Tyler Creech](tyler@largelandscapes.org), [Meredith McClure](meredith@csp-inc.org)
+
+Row {data-height=150}
+-----------------------------------------------------------------------
+
+```{r saveRun}
+    #USER INPUT: ACTION BUTTONS
+    column(3,
+        actionButton("load.inputs", "Load last settings", 
+            style="background-color: #528B8B; border-color: #2F4F4F")
+    )
+    column(3,    
+        actionButton("save.settings", "Save run settings",
+            style="background-color: #528B8B; border-color: #2F4F4F"),
+        textOutput("save.confirm")
+    )
+    column(3,
+        actionButton("run.tool", "Run prioritization",
+            style="background-color: #528B8B; border-color: #2F4F4F"),
+        textOutput("please.wait"),
+        textOutput("save.error")
+    )
+    column(3,
+        actionButton("check.stat","Check run status",
+            style="background-color: #528B8B; border-color: #2F4F4F"),
+        textOutput("stat.running"),
+        textOutput("stat.done")
+    )
+    
+    #REACTIVELY LOAD PREVIOUS SETTINGS (LOAD BUTTON)
+    observeEvent(input$load.inputs,{   
+      if(!file.exists('runs/lastinputs.RDS')) {return(NULL)}
+    
+      savedInputs <- readRDS('runs/lastinputs.RDS')
+      inputIDs      <- names(savedInputs) 
+      inputvalues   <- unlist(savedInputs) 
+    
+      for (i in 1:length(savedInputs)) { 
+        session$sendInputMessage(inputIDs[i],  list(value=inputvalues[[i]]))
+      }
+    })
+  
+    #REACTIVELY SET UP ZONATION FILES (SAVE BUTTON) 
+    observeEvent(input$save.settings,{
+      inputList<-reactiveValuesToList(input)
+      saveRDS(inputList, file = 'runs/lastinputs.RDS')
+
+      project_path<-file.path("MHB_PrioritizationTool")
+      variant_name<-input$run.name
+      input_raster_dir<-paste0("runs/data/TargetCondition/",
+                               unique(targ.summ[targ.summ[,input$action.sel]==1,"dir"]))   
+    
+      targWts<-unlist(inputList[grep("targ", names(inputList))])[1:length(targets)]
+      targNames<-as.vector(targ.summ[targ.summ[,input$action.sel]==1,"name"])
+      targCurves<-ifelse(targNames %in% c("Stream health","Normative flow regime"),as.numeric(input$dirconn.sel),1)
+      
+      #This uses a revised version of zonator's 'create_zproject' function that correctly aligns subdirectories
+      create_zproject_rev(name="runs",dir=".",variants=variant_name,
+                        spp_template_dir=input_raster_dir,spp_file_pattern="*.tif",   
+                        overwrite=T,
+                        weight=targWts, 
+                        bqp=targCurves, #upstream curve function
+                        bqp_p=1) #downstream curve function 
+      
+      #See Zonation 4.0 user manual for table of all run settings options
+      dat<-list("Settings" = list("removal rule"=2, "edge removal"=1, 
+                    "use planning unit layer"=1, 
+                    "planning unit layer file"=paste0("runs/data/ZonationData/HUC12_zones_270m_LEAFLET.tif"),  
+                    "use cost"=0, 
+                    "use mask"=0, 
+                    "use tree connectivity"=1, 
+                    "tree connectivity file"=paste0("runs/data/ZonationData/MHB_dirconn.txt"),
+                    "BQP profiles file" = paste0("runs/data/ZonationData/MHB_NQP.txt")))
+      
+      write_dat(dat,paste0("./runs/",variant_name,"/",variant_name,".dat"),overwrite=T)
+      output$save.confirm <- renderText ({"Your settings have been saved."})
+  })  
+  
+  #REACTIVELY RUN ZONATION FROM SHELL (RUN BUTTON) 
+  observeEvent(input$run.tool,{
+    project_path<-file.path("runs")
+    variant_name<-input$run.name
+    
+    if (isTRUE(file.exists(paste0("./runs/",variant_name,".bat")))) {
+      shell.exec(paste0("runs\\",  
+                        variant_name,".bat"))
+      huc12c <<- SpatialPointsDataFrame(gCentroid(huc12, byid=TRUE), huc12@data["HUC12"], match.ID=FALSE)
+      output$please.wait<-renderText({paste("Please wait. Your results will be saved to 
+                                            'runs/",input$run.name,"'.",sep="")})
+    }
+    else{
+      output$save.error <- renderText({"You must first save your run settings"})
+    }
+  })
+  
+```

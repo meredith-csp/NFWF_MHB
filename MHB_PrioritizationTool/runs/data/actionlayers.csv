@@ -1,0 +1,10 @@
+action,label,maskid,masklyr,masklyr_shp
+Private land protection,option1,mask.lp,landProtect_mask_270m_LEAFLET.tif,landprotect.shp
+Upgrade culverts/bridges,option2,mask.bc,bridgeCulvert_mask_270m_LEAFLET.tif,bridgeculvert.shp
+Decommission roads,option3,mask.rd,roadDecommission_mask_270m_LEAFLET.tif,roaddecommission.shp
+Reduce grazing pressure,option4,mask.gm,grazingMgmt_mask_270m_LEAFLET.tif,grazingmgmt.shp
+Adjust irrigation practices,option5,mask.ia,irrigAdjust_mask_270m_LEAFLET.tif,irrigadjust.shp
+Manage soil health,option6,mask.sm,soilMgmt_mask_270m_LEAFLET.tif,soilmgmt.shp
+Streams/riparian restoration,option7,mask.sr,streamRipRestore_mask_270m_LEAFLET.tif,streamriprestore.shp
+Fuels management,option8,mask.fm,fuelsMgmt_mask_270m_LEAFLET.tif,fuelsmgmt.shp
+Encroachment control,option9,mask.ec,encroachControl_mask_270m_LEAFLET.tif,encroachcontrol.shp

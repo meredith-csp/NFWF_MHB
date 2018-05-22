@@ -1,0 +1,40 @@
+abbv,name,weight,dir,file,option1,option2,option3,option4,option5,option6,option7,option8,option9
+lp1,Forest connectivity,0,1landProtect,landProtect_1forestCentrality_condition_270m_LEAFLET,1,0,0,0,0,0,0,0,0
+lp2,Shrub connectivity,0,1landProtect,landProtect_2shrubCentrality_condition_270m_LEAFLET,1,0,0,0,0,0,0,0,0
+lp3,Grassland connectivity,0,1landProtect,landProtect_3grassCentrality_condition_270m_LEAFLET,1,0,0,0,0,0,0,0,0
+lp4,Upland vegetation,0,1landProtect,landProtect_4uplandVeg_condition_270m_LEAFLET,1,0,0,0,0,0,0,0,0
+lp5,Riparian Potential,0,1landProtect,landProtect_5riparianConfig_condition_270m_LEAFLET,1,0,0,0,0,0,0,0,0
+lp6,Stream health,0,1landProtect,landProtect_6streamHealth_condition_270m_LEAFLET,1,0,0,0,0,0,0,0,0
+lp7,Normative flow regime,0,1landProtect,landProtect_7normFlow_condition_270m_LEAFLET,1,0,0,0,0,0,0,0,0
+bc1,Forest connectivity,0,2bridgeCulvert,bridgeCulvert_1forestCentrality_condition_270m_LEAFLET,0,1,0,0,0,0,0,0,0
+bc2,Shrub connectivity,0,2bridgeCulvert,bridgeCulvert_2shrubCentrality_condition_270m_LEAFLET,0,1,0,0,0,0,0,0,0
+bc3,Grassland connectivity,0,2bridgeCulvert,bridgeCulvert_3grassCentrality_condition_270m_LEAFLET,0,1,0,0,0,0,0,0,0
+bc6,Stream health,0,2bridgeCulvert,bridgeCulvert_6streamHealth_condition_270m_LEAFLET,0,1,0,0,0,0,0,0,0
+rd1,Forest connectivity,0,3roadDecommission,roadDecommission_1forestCentrality_condition_270m_LEAFLET,0,0,1,0,0,0,0,0,0
+rd2,Shrub connectivity,0,3roadDecommission,roadDecommission_2shrubCentrality_condition_270m_LEAFLET,0,0,1,0,0,0,0,0,0
+rd3,Grassland connectivity,0,3roadDecommission,roadDecommission_3grassCentrality_condition_270m_LEAFLET,0,0,1,0,0,0,0,0,0
+rd5,Riparian Potential,0,3roadDecommission,roadDecommission_5riparianConfig_condition_270m_LEAFLET,0,0,1,0,0,0,0,0,0
+rd6,Stream health,0,3roadDecommission,roadDecommission_6streamHealth_condition_270m_LEAFLET,0,0,1,0,0,0,0,0,0
+gm1,Forest connectivity,0,4grazingMgmt,grazingMgmt_1forestCentrality_condition_270m_LEAFLET,0,0,0,1,0,0,0,0,0
+gm2,Shrub connectivity,0,4grazingMgmt,grazingMgmt_2shrubCentrality_condition_270m_LEAFLET,0,0,0,1,0,0,0,0,0
+gm3,Grassland connectivity,0,4grazingMgmt,grazingMgmt_3grassCentrality_condition_270m_LEAFLET,0,0,0,1,0,0,0,0,0
+gm4,Upland vegetation,0,4grazingMgmt,grazingMgmt_4uplandVeg_condition_270m_LEAFLET,0,0,0,1,0,0,0,0,0
+gm5,Riparian Potential,0,4grazingMgmt,grazingMgmt_5riparianConfig_condition_270m_LEAFLET,0,0,0,1,0,0,0,0,0
+gm6,Stream health,0,4grazingMgmt,grazingMgmt_6streamHealth_condition_270m_LEAFLET,0,0,0,1,0,0,0,0,0
+ia6,Stream health,0,5irrigAdjust,irrigAdjust_6streamHealth_condition_270m_LEAFLET,0,0,0,0,1,0,0,0,0
+ia7,Normative flow regime,0,5irrigAdjust,irrigAdjust_7normFlow_condition_270m_LEAFLET,0,0,0,0,1,0,0,0,0
+sm6,Stream health,0,6soilMgmt,soilMgmt_6streamHealth_condition_270m_LEAFLET,0,0,0,0,0,1,0,0,0
+sm7,Normative flow regime,0,6soilMgmt,soilMgmt_7normFlow_condition_270m_LEAFLET,0,0,0,0,0,1,0,0,0
+sr1,Forest connectivity,0,7streamRipRestore,streamRipRestore_1forestCentrality_condition_270m_LEAFLET,0,0,0,0,0,0,1,0,0
+sr2,Shrub connectivity,0,7streamRipRestore,streamRipRestore_2shrubCentrality_condition_270m_LEAFLET,0,0,0,0,0,0,1,0,0
+sr3,Grassland connectivity,0,7streamRipRestore,streamRipRestore_3grassCentrality_condition_270m_LEAFLET,0,0,0,0,0,0,1,0,0
+sr5,Riparian Potential,0,7streamRipRestore,streamRipRestore_5riparianConfig_condition_270m_LEAFLET,0,0,0,0,0,0,1,0,0
+sr6,Stream health,0,7streamRipRestore,streamRipRestore_6streamHealth_condition_270m_LEAFLET,0,0,0,0,0,0,1,0,0
+sr7,Normative flow regime,0,7streamRipRestore,streamRipRestore_7normFlow_condition_270m_LEAFLET,0,0,0,0,0,0,1,0,0
+fm1,Forest connectivity,0,8fuelsMgmt,fuelsMgmt_1forestCentrality_condition_270m_LEAFLET,0,0,0,0,0,0,0,1,0
+fm2,Shrub connectivity,0,8fuelsMgmt,fuelsMgmt_2shrubCentrality_condition_270m_LEAFLET,0,0,0,0,0,0,0,1,0
+fm4,Upland vegetation,0,8fuelsMgmt,fuelsMgmt_4uplandVeg_condition_270m_LEAFLET,0,0,0,0,0,0,0,1,0
+fm5,Riparian Potential,0,8fuelsMgmt,fuelsMgmt_5riparianConfig_condition_270m_LEAFLET,0,0,0,0,0,0,0,1,0
+ec2,Shrub connectivity,0,9encroachControl,encroachControl_2shrubCentrality_condition_270m_LEAFLET,0,0,0,0,0,0,0,0,1
+ec3,Grassland connectivity,0,9encroachControl,encroachControl_3grassCentrality_condition_270m_LEAFLET,0,0,0,0,0,0,0,0,1
+ec4,Upland vegetation,0,9encroachControl,encroachControl_4uplandVeg_condition_270m_LEAFLET,0,0,0,0,0,0,0,0,1
