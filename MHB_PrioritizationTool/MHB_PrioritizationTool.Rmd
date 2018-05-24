@@ -10,9 +10,12 @@ runtime: shiny
 #####################################################################
 #                                                                   #
 #                                                                   #
-#   TO RUN THIS TOOL, HIT 'Run Document' NEXT TO THE GREEN ARROW    #
-#                  IN THE HEADER OF THIS TAB.                       #
+#  TO RUN THIS TOOL, CLICK 'Run Document' NEXT TO THE GREEN ARROW   #
+#             DIRECTLY ABOVE IN THE HEADER OF THIS TAB.             #
 #                                                                   #
+#  If you are running this tool for the first time, make sure that  #
+#   you have run 'MHB_ToolSetup.R' first to install the necessary   #
+#                          R packages.                              #
 #                                                                   #
 #          (There is no need to interact with the code              #
 #               below - please do not modify it!)                   #
@@ -33,8 +36,8 @@ color:white!important;
 
 ```{r global, include=FALSE}
 #Load packages
-if (!require("pacman")) install.packages("pacman",repos = "http://cran.us.r-project.org")
-  pacman::p_load(rmarkdown, flexdashboard, zonator, raster, rgdal, rgeos, leaflet, mapview, RColorBrewer) #shinydashboard, 
+packages<-c("rmarkdown","raster","rgdal","rgeos","leaflet","mapview","RColorBrewer","zonator")
+lapply(packages,library,character.only=T)  
 source('create_zproject_rev.R')  
 
 #Load common data
@@ -213,15 +216,22 @@ Start by selecting your conservation action of interest, then assign weights to 
 
 #### Resources
 
-For further instructions, more information on the input data and prioritization algorithm, and other supporting information, view or download the [full documentation](https://drive.google.com/open?id=1sOPr7kSgzBG8BNh66u3jwUP-ackppJagv9uay6Rxo3Q). 
+For further instructions, more information on the input data and prioritization algorithm, and other supporting information, download the [full documentation](http://largelandscapes.org/media/publications/MHB_ProjectSummaryUserGuide.pdf) and/or the [quick-start guide](http://largelandscapes.org/media/publications/MHB_QuickStart.pdf). 
+
+Please see the README file for disclaimer information. 
 
 ***
 
 #### Credits
 
-This custom decision support tool was developed by [The Center for Large Landscape Conservation](http://www.largelandscapes.org) and [Conservation Science Partners](http://www.csp-inc.org), with funding from [The National Fish & Wildlife Foundation](http://www.nfwf.org). The prioritization is run using [Zonation 4.0](https://www.helsinki.fi/en/researchgroups/metapopulation-research-centre/software#section-14300) and an adaptation of the [zonator](https://github.com/cbig/zonator) package for R.
+This custom decision support tool was developed by [The Center for Large Landscape Conservation](http://www.largelandscapes.org) and [Conservation Science Partners](http://www.csp-inc.org), with funding from [The National Fish & Wildlife Foundation](http://www.nfwf.org). The prioritization is run using [Zonation 4.0](https://www.helsinki.fi/en/researchgroups/metapopulation-research-centre/software#section-14300) produced by Atte Moilanen and colleagues, and an adaptation of the [zonator](https://github.com/cbig/zonator) package for R developed by Joona Lehtomaki.
+
+Please cite use of this tool, associated data layers, and documentation as: Creech, T., McClure, M., and van Rees, C. 2018. A Conservation Prioritization Tool for the Missouri Headwaters Basin. Center for Large Landscape Conservation, Bozeman, MT.
 
 Contact: [Tyler Creech](tyler@largelandscapes.org), [Meredith McClure](meredith@csp-inc.org)
+
+***
+
 
 Row {data-height=150}
 -----------------------------------------------------------------------

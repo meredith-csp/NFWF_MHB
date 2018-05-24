@@ -1,36 +1,61 @@
-MISSOURI HEADWATERS BASIN CONSERVATION PRIORITIZATION TOOL
+MISSOURI HEADWATERS BASIN CROSS-REALM MANAGEMENT PRIORITIZATION TOOL
 
 
 ---System Requirements---
 
  - Windows operating system
+ - R (version 3.0.1 or later)
  - RStudio (version 1.0 or later)
 
-This tool is set up as an interactive R Notebook, which is powered by the R statistical programming environment (https://www.r-project.org/). Although there is no need for users to have any familiarity with R, users do need to download and install R and version 1.0 or later of the RStudio software. Unfortunately, because the Zonation software is not compatible with Mac operating systems, this tool can only be run on Windows machines. 
+This tool is powered by the R statistical programming environment (https://www.r-project.org/). Although there is no need for users to have any familiarity with R, users do need to download and install R and version 1.0 or later of the RStudio software. Unfortunately, because the Zonation software is not compatible with Mac operating systems, this tool can only be run on Windows machines. 
 
-You can download and install the latest versions of R and RStudio for Windows here:
-https://cran.rstudio.com/bin/windows/base/
+You can download and install the current versions of R and RStudio for Windows here:
+https://cran.rstudio.com/bin/windows/base/R-3.5.0-win.exe
 https://download1.rstudio.org/RStudio-1.1.423.exe
 
 
 ---Getting Started---
 
-This tool is designed to help identify priority subwatersheds in the Missouri Headwaters Basin where there is potential for a conservation action of interest to provide the greatest net benefits to multiple conservation targets. 
+This tool is designed to help identify priority subwatersheds in the Missouri Headwaters Basin where there is potential for a conservation action of interest to provide the greatest net benefits to multiple conservation targets.
 
-Start by opening the 'MHB_PrioritizationTool.Rmd' R Markdown file. RStudio will open a script to run the tool - DON'T PANIC! There is no need to understand or interact with the code, simply choose 'Run Document' next to the green arrow in the tab header. A graphical user interface will open to allow selection of settings and exploration of the map data. 
+If this is the first time you are running the tool, start by opening the 'MHB_ToolSetup.R' file. RStudio will open a short install script - DON'T PANIC! All you need to do is click the 'Source' button on the right side of the tab header. This will install the R packages needed to run the tool. This should take 5-10 minutes, and you will only need to do this the first time you run the tool. 
+
+To run the tool, open the 'MHB_PrioritizationTool.Rmd' R Markdown file. RStudio will open a script to run the tool - DON'T PANIC! There is no need to understand or interact with the code, simply click 'Run Document' next to the green arrow in the tab header. A graphical user interface will open to allow selection of settings and exploration of the map data. 
 
 Start by selecting your conservation action of interest, then assign weights to conservation targets that are linked to that action, based on their relative importance to you. When the prioritization process is finished, you can use the interactive map and plots to explore the results.
 
 
 ---Resources---
 
-For further instructions, more information on the input data and prioritization algorithm, and other supporting information, view or download the full documentation here: https://drive.google.com/open?id=1sOPr7kSgzBG8BNh66u3jwUP-ackppJagv9uay6Rxo3Q 
+For further instructions, more information on the input data and prioritization algorithm, and other supporting information, the following resources are available for download:
+
+Quick-start guide: http://largelandscapes.org/media/publications/MHB_QuickStart.pdf
+Full documentation: http://largelandscapes.org/media/publications/MHB_ProjectSummaryUserGuide.pdf
 
 
 ---Credits---
 
-This custom decision support tool was developed by The Center for Large Landscape Conservation (http://www.largelandscapes.org) and Conservation Science Partners(http://www.csp-inc.org), with funding from The National Fish & Wildlife Foundation(http://www.nfwf.org). 
+This custom decision support tool was developed by The Center for Large Landscape Conservation (http://www.largelandscapes.org) and Conservation Science Partners (http://www.csp-inc.org), with funding from The National Fish & Wildlife Foundation (http://www.nfwf.org). 
 
-The prioritization is run using Zonation 4.0 (https://www.helsinki.fi/en/researchgroups/metapopulation-research-centre/software#section-14300) and an adaptation of the zonator package for R (https://github.com/cbig/zonator).
+The prioritization is run using Zonation 4.0 (https://www.helsinki.fi/en/researchgroups/metapopulation-research-centre/software#section-14300) produced by Atte Moilanen and colleagues, and an adaptation of the zonator package for R (https://github.com/cbig/zonator) developed by Joona Lehtomaki.
 
 Contact: Tyler Creech (tyler@largelandscapes.org), Meredith McClure (meredith@csp-inc.org)
+
+
+---Suggested Citation---
+
+Please cite use of this tool, associated data layers, and documentation as: Creech, T., McClure, M., and van Rees, C. 2018. A Conservation Prioritization Tool for the Missouri Headwaters Basin. Center for Large Landscape Conservation, Bozeman, MT.
+
+
+---Disclaimer---
+The authors disclaim to the fullest extent authorized by law any and all warranties, whether express or implied, including, without limitation, any implied warranties of integration or fitness for a particular purpose.
+
+You assume responsibility for selecting the software to achieve your intended results, and for the results obtained from your use of the software. You shall bear the entire risk as to the quality and the performance of the software.
+
+Without limitation of the foregoing, the authors expressly do not warrant that:
+  (a) the software will meet your requirements; 
+  (b) the software will be free of bugs, errors, viruses or other defects;
+  (c) any results, output, or data provided through or generated by the software will be accurate, up-to-date, complete or reliable;
+  (d) the software will be compatible with third party software;
+  (e) any errors in the software will be corrected.
+
