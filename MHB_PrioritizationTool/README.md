@@ -29,8 +29,8 @@ Start by selecting your conservation action of interest, then assign weights to 
 
 For further instructions, more information on the input data and prioritization algorithm, and other supporting information, the following resources are available for download:
 
-Quick-start guide: http://largelandscapes.org/media/publications/MHB_QuickStart.pdf
-Full documentation: http://largelandscapes.org/media/publications/MHB_ProjectSummaryUserGuide.pdf
+Quick-start guide: https://drive.google.com/open?id=1E2ejO9zuzVn1l7yhlpasIN7z9js-hhyC
+Full documentation: https://drive.google.com/open?id=1gupPNpsWDjBk7jhfqGiyarJwMEDzrjMJ
 
 
 ---Credits---
