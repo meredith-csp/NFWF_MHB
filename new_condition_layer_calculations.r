@@ -3,7 +3,8 @@ library(sf)
 
 infolder <- "C:/Work/SpatialData/NFWF_Cross_Realm/Final Input Rasters/"  # folder holding prepped input rasters (should have same projection, resolution, and origin as HUC12 zones layer)
 #outfolder <- "C:/Work/SpatialData/NFWF_Cross_Realm/Final Condition Rasters/"   # folder where condition raster will be written
-outfolder <- "H:/Final Condition Rasters 90m/"
+#outfolder <- "H:/Final Condition Rasters 90m/"
+outfolder <- "C:/Users/Tyler/Desktop/New bridge and culvert outputs/"
 zones.10m <- raster(paste0(infolder, "HUC12_zones_10m_NAD83UTM.tif"))
 zones.90m <- raster(paste0(infolder, "HUC12_zones_90m_NAD83UTM.tif"))
 
@@ -12,10 +13,10 @@ zones.90m <- raster(paste0(infolder, "HUC12_zones_90m_NAD83UTM.tif"))
 
 # Test for differences in extents of rasters
 e1 <- extent(zones.10m)
-e2 <- extent(keep.biotic)
+e2 <- extent(bridge.biotic)
 plot(e1, col="blue", add=TRUE)
 plot(e2, col="red")
-compareRaster(zones.10m, roads.vb)
+compareRaster(zones.10m, edge.uplands)
 
 
 
@@ -40,7 +41,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "fuelsMgmt_riparianConfig_condition_NAD83UTM.tif"  # name of output
+outfilename <- "fuelsMgmt_5riparianConfig_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -58,7 +59,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "fuelsMgmt_uplandVeg_condition_NAD83UTM.tif"  # name of output
+outfilename <- "fuelsMgmt_4uplandVeg_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -76,7 +77,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "fuelsMgmt_shrubCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "fuelsMgmt_2shrubCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -94,7 +95,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "fuelsMgmt_forestCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "fuelsMgmt_1forestCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -119,7 +120,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "grazingMgmt_streamHealth_condition_NAD83UTM.tif"  # name of output
+outfilename <- "grazingMgmt_6streamHealth_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -137,7 +138,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "grazingMgmt_riparianConfig_condition_NAD83UTM.tif"  # name of output
+outfilename <- "grazingMgmt_5riparianConfig_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -155,7 +156,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "grazingMgmt_uplandVeg_condition_NAD83UTM.tif"  # name of output
+outfilename <- "grazingMgmt_4uplandVeg_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -173,7 +174,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "grazingMgmt_grassCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "grazingMgmt_3grassCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -191,7 +192,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "grazingMgmt_shrubCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "grazingMgmt_2shrubCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -209,7 +210,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "grazingMgmt_forestCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "grazingMgmt_1forestCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -234,7 +235,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "irrigAdjust_normFlow_condition_NAD83UTM.tif"  # name of output
+outfilename <- "irrigAdjust_7normFlow_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -254,7 +255,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "irrigAdjust_streamHealth_condition_NAD83UTM.tif"  # name of output
+outfilename <- "irrigAdjust_6streamHealth_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -280,7 +281,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "landProtect_normFlow_condition_NAD83UTM.tif"  # name of output
+outfilename <- "landProtect_7normFlow_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -311,7 +312,7 @@ combo <- rescaled1 + rescaled2
 rescaled.combo <- (combo - min(combo, na.rm=TRUE))/(max(combo, na.rm=TRUE)-min(combo, na.rm=TRUE))
 reclass.mat <- as.matrix(cbind(zonal.mat1[,1],rescaled.combo))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "landProtect_riparianConfig_condition_NAD83UTM.tif"  # name of output
+outfilename <- "landProtect_5riparianConfig_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -331,7 +332,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "landProtect_streamHealth_condition_NAD83UTM.tif"  # name of output
+outfilename <- "landProtect_6streamHealth_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -353,7 +354,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "landProtect_uplandVeg_condition_NAD83UTM.tif"  # name of output
+outfilename <- "landProtect_4uplandVeg_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -371,7 +372,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "landProtect_grassCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "landProtect_3grassCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -389,7 +390,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "landProtect_shrubCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "landProtect_2shrubCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -407,7 +408,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "landProtect_forestCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "landProtect_1forestCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -420,18 +421,18 @@ gc() # garbage collector to free up memory
 ########################################################################################################################
 
 ### Bridge/culvert upgrade --> Stream health
-# Goal: Select HUC units with bridges near poor condition streams
+# Goal: Select HUC units with bridges/culverts near poor condition streams
 reversed.stream.biotic <- raster(paste0(infolder,"reversed_stream_biotic_condition_10m_NAD83UTM.tif"))  # import stream biotic condition layer, reversed so that poorer condition = higher value
-bridge.buffer <- raster(paste0(infolder, "bridges_100m_buffer_10m_NAD83UTM.tif"))  # import bridges layer, buffered by 100 m
-bridge.biotic <- bridge.buffer * reversed.stream.biotic  # keep only those biotic values for stream segments within 100m of bridges
-zones.10m.crop <- crop(zones.10m, bridge.biotic)  # crop by extent of smaller raster
-zonal.mat <- zonal(x=bridge.biotic, z=zones.10m.crop, fun="mean", na.rm=TRUE)   # take mean of remaining pixels
+bridge.buffer <- raster(paste0(infolder, "bridges_and_culverts_100m_buffer_10m_NAD83UTM.tif"))  # import bridges/culverts layer, buffered by 100 m
+bridge.biotic <- bridge.buffer * reversed.stream.biotic  # keep only those biotic values for stream segments within 100m of bridges/culverts
+bridge.biotic.crop <- crop(bridge.biotic, zones.10m)
+zonal.mat <- zonal(x=bridge.biotic.crop, z=zones.10m, fun="mean", na.rm=TRUE)   # take mean of remaining pixels
 zonal.mat[zonal.mat==0 | zonal.mat=="NaN"] <- NA   # set zones with sum=0 to NA, since we don't want to include these in prioritization as they have no opportunity for action
 original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "bridgeCulvert_streamHealth_condition_NAD83UTM.tif"  # name of output
+outfilename <- "bridgeCulvert_6streamHealth_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -440,16 +441,16 @@ gc() # garbage collector to free up memory
 ### Bridge/culvert upgrade --> forest connectivity
 # Goal: Select HUC units where the most high centrality forest flowlines are present in the vicinity of bridges/culverts that could potentially be upgraded
 forest.centrality <- raster(paste0(infolder, "forest_centrality_flowlines_10m_NAD83UTM.tif"))  # import forest centrality layer
-bridge.buffer <- raster(paste0(infolder, "bridges_1km_buffer_10m_NAD83UTM.tif"))  # import bridges layer, buffered by 1 km
-bridge.centrality <- forest.centrality * bridge.buffer   # keep only those flowlines that are within 1 km of bridges
-zones.10m.crop <- crop(zones.10m, bridge.centrality)  # crop by extent of smaller raster
-zonal.mat <- zonal(x=bridge.centrality, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
+bridge.buffer <- raster(paste0(infolder, "bridges_and_culverts_1km_buffer_10m_NAD83UTM.tif"))  # import bridges/culverts layer, buffered by 1 km
+bridge.centrality <- forest.centrality * bridge.buffer   # keep only those flowlines that are within 1 km of bridges/culverts
+bridge.centrality.crop <- crop(bridge.centrality, zones.10m)  # crop by extent of smaller raster
+zonal.mat <- zonal(x=bridge.centrality.crop, z=zones.10m, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
 zonal.mat[zonal.mat==0] <- NA  # set zones with sum=0 to NA, since we don't want to include these in prioritization as they have no opportunity for action
 original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "bridgeCulvert_forestCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "bridgeCulvert_1forestCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -458,16 +459,16 @@ gc() # garbage collector to free up memory
 ### Bridge/culvert upgrade --> grassland connectivity
 # Goal: Select HUC units where the most high centrality grassland flowlines are present in the vicinity of bridges/culverts that could potentially be upgraded
 grass.centrality <- raster(paste0(infolder, "grassland_centrality_flowlines_10m_NAD83UTM.tif"))  # import grassland centrality layer
-bridge.buffer <- raster(paste0(infolder, "bridges_1km_buffer_10m_NAD83UTM.tif"))  # import bridges layer, buffered by 1 km
-bridge.centrality <- grass.centrality * bridge.buffer   # keep only those flowlines that are within 1 km of bridges
-zones.10m.crop <- crop(zones.10m, bridge.centrality)  # crop by extent of smaller raster
-zonal.mat <- zonal(x=bridge.centrality, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
+bridge.buffer <- raster(paste0(infolder, "bridges_and_culverts_1km_buffer_10m_NAD83UTM.tif"))  # import bridges/culverts layer, buffered by 1 km
+bridge.centrality <- grass.centrality * bridge.buffer   # keep only those flowlines that are within 1 km of bridges/culverts
+bridge.centrality.crop <- crop(bridge.centrality, zones.10m)  # crop by extent of smaller raster
+zonal.mat <- zonal(x=bridge.centrality.crop, z=zones.10m, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
 zonal.mat[zonal.mat==0] <- NA  # set zones with sum=0 to NA, since we don't want to include these in prioritization as they have no opportunity for action
 original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "bridgeCulvert_grassCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "bridgeCulvert_3grassCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -476,16 +477,16 @@ gc() # garbage collector to free up memory
 ### Bridge/culvert upgrade --> shrubland connectivity
 # Goal: Select HUC units where the most high centrality shrubland flowlines are present in the vicinity of bridges/culverts that could potentially be upgraded
 shrub.centrality <- raster(paste0(infolder, "shrubland_centrality_flowlines_10m_NAD83UTM.tif"))  # import shrubland centrality layer
-bridge.buffer <- raster(paste0(infolder, "bridges_1km_buffer_10m_NAD83UTM.tif"))  # import bridges layer, buffered by 1 km
-bridge.centrality <- shrub.centrality * bridge.buffer   # keep only those flowlines that are within 1 km of bridges
-zones.10m.crop <- crop(zones.10m, bridge.centrality)  # crop by extent of smaller raster
-zonal.mat <- zonal(x=bridge.centrality, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
+bridge.buffer <- raster(paste0(infolder, "bridges_and_culverts_1km_buffer_10m_NAD83UTM.tif"))  # import bridges/culverts layer, buffered by 1 km
+bridge.centrality <- shrub.centrality * bridge.buffer   # keep only those flowlines that are within 1 km of bridges/culverts
+bridge.centrality.crop <- crop(bridge.centrality, zones.10m)  # crop by extent of smaller raster
+zonal.mat <- zonal(x=bridge.centrality.crop, z=zones.10m, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
 zonal.mat[zonal.mat==0] <- NA  # set zones with sum=0 to NA, since we don't want to include these in prioritization as they have no opportunity for action
 original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "bridgeCulvert_shrubCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "bridgeCulvert_2shrubCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -500,7 +501,7 @@ gc() # garbage collector to free up memory
 
 ### Road decommissioning --> Riparian configuration
 # Goal: Select HUC units that have the greatest amount of decommissionable roads in valley bottoms
-roads <- raster(paste0(infolder, "decommissionable_roads_10m_NAD83UTM.tif"))    # import decommissionable roads layer
+roads <- raster(paste0(infolder, "decommissionable_roads_public_10m_NAD83UTM.tif"))    # import decommissionable roads layer
 vb <- raster(paste0(infolder, "valley_bottom_no_waterbody_10m_NAD83UTM.tif"))  # import valley bottoms layer
 roads.vb <- roads * vb   # remove roads that are not within valleybottom
 zones.10m.crop <- crop(zones.10m, roads.vb)  # crop by extent of smaller raster
@@ -510,7 +511,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "roadDecommission_riparianConfig_condition_NAD83UTM.tif"  # name of output
+outfilename <- "roadDecommission_5riparianConfig_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -519,7 +520,7 @@ gc() # garbage collector to free up memory
 ### Road decommissioning --> Stream health
 # Goal: Select HUC units that have the greatest length of streams in poor biotic condition near decommissionable roads
 reversed.stream.biotic <- raster(paste0(infolder,"reversed_stream_biotic_condition_10m_NAD83UTM.tif"))  # import stream biotic condition layer, reversed so that poorer condition = higher value
-road.buffer <- raster(paste0(infolder, "decommissionable_roads_1km_buffer_10m_NAD83UTM.tif"))  # import roads buffered by 1 km layer
+road.buffer <- raster(paste0(infolder, "decommissionable_roads_public_1km_buffer_10m_NAD83UTM.tif"))  # import roads buffered by 1 km layer
 road.biotic <- reversed.stream.biotic * road.buffer  # keep only those biotic condition pixels for areas near roads
 meanval <- cellStats(road.biotic, stat="mean", na.rm=TRUE)  # calculate mean biotic value for streams near roads
 keep.road.biotic <- reclassify(road.biotic, rcl=matrix(c(0, meanval, NA), ncol=3), right=FALSE)
@@ -530,7 +531,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "roadDecommission_streamHealth_condition_NAD83UTM.tif"  # name of output
+outfilename <- "roadDecommission_6streamHealth_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -539,7 +540,7 @@ gc() # garbage collector to free up memory
 ### Road decommissioning --> Grassland connectivity
 # Goal: Select HUC units that have contain the most high centrality grassland flowlines near decommissionable roads
 grass.centrality <- raster(paste0(infolder, "grassland_centrality_flowlines_10m_NAD83UTM.tif"))  # import grassland centrality layer
-road.buffer <- raster(paste0(infolder, "decommissionable_roads_1km_buffer_10m_NAD83UTM.tif"))  # import roads buffered by 1 km layer
+road.buffer <- raster(paste0(infolder, "decommissionable_roads_public_1km_buffer_10m_NAD83UTM.tif"))  # import roads buffered by 1 km layer
 road.centrality <- grass.centrality * road.buffer   # keep only those flowlines that are within 1 km of roads
 zones.10m.crop <- crop(zones.10m, road.centrality)  # crop by extent of smaller raster
 zonal.mat <- zonal(x=road.centrality, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
@@ -548,7 +549,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "roadDecommission_grassCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "roadDecommission_3grassCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -557,7 +558,7 @@ gc() # garbage collector to free up memory
 ### Road decommissioning --> Shrubland connectivity
 # Goal: Select HUC units that have contain the most high centrality shrubland flowlines near decommissionable roads
 shrub.centrality <- raster(paste0(infolder, "shrubland_centrality_flowlines_10m_NAD83UTM.tif"))  # import shrubland centrality layer
-road.buffer <- raster(paste0(infolder, "decommissionable_roads_1km_buffer_10m_NAD83UTM.tif"))  # import roads buffered by 1 km layer
+road.buffer <- raster(paste0(infolder, "decommissionable_roads_public_1km_buffer_10m_NAD83UTM.tif"))  # import roads buffered by 1 km layer
 road.centrality <- shrub.centrality * road.buffer   # keep only those flowlines that are within 1 km of roads
 zones.10m.crop <- crop(zones.10m, road.centrality)  # crop by extent of smaller raster
 zonal.mat <- zonal(x=road.centrality, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
@@ -566,7 +567,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "roadDecommission_shrubCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "roadDecommission_2shrubCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -575,7 +576,7 @@ gc() # garbage collector to free up memory
 ### Road decommissioning --> Forest connectivity
 # Goal: Select HUC units that have contain the most high centrality forest flowlines near decommissionable roads
 forest.centrality <- raster(paste0(infolder, "forest_centrality_flowlines_10m_NAD83UTM.tif"))  # import forest centrality layer
-road.buffer <- raster(paste0(infolder, "decommissionable_roads_1km_buffer_10m_NAD83UTM.tif"))  # import roads buffered by 1 km layer
+road.buffer <- raster(paste0(infolder, "decommissionable_roads_public_1km_buffer_10m_NAD83UTM.tif"))  # import roads buffered by 1 km layer
 road.centrality <- forest.centrality * road.buffer   # keep only those flowlines that are within 1 km of roads
 zones.10m.crop <- crop(zones.10m, road.centrality)  # crop by extent of smaller raster
 zonal.mat <- zonal(x=road.centrality, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
@@ -584,7 +585,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "roadDecommission_forestCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "roadDecommission_1forestCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -610,7 +611,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "soilMgmt_normFlow_condition_NAD83UTM.tif"  # name of output
+outfilename <- "soilMgmt_7normFlow_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -630,7 +631,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "soilMgmt_streamHealth_condition_NAD83UTM.tif"  # name of output
+outfilename <- "soilMgmt_6streamHealth_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -654,7 +655,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "streamRipRestore_normFlow_condition_NAD83UTM.tif"  # name of output
+outfilename <- "streamRipRestore_7normFlow_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -685,7 +686,7 @@ combo <- rescaled1 + rescaled2
 rescaled.combo <- (combo - min(combo, na.rm=TRUE))/(max(combo, na.rm=TRUE)-min(combo, na.rm=TRUE))
 reclass.mat <- as.matrix(cbind(zonal.mat1[,1],rescaled.combo))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "streamRipRestore_riparianConfig_condition_NAD83UTM.tif"  # name of output
+outfilename <- "streamRipRestore_5riparianConfig_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -703,7 +704,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "streamRipRestore_streamHealth_condition_NAD83UTM.tif"  # name of output
+outfilename <- "streamRipRestore_6streamHealth_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -721,7 +722,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "streamRipRestore_grassCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "streamRipRestore_3grassCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -739,7 +740,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "streamRipRestore_forestCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "streamRipRestore_1forestCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -757,7 +758,7 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "streamRipRestore_shrubCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "streamRipRestore_2shrubCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
@@ -770,9 +771,9 @@ gc() # garbage collector to free up memory
 #########################################################################################################################
 
 ### Conifer/shrub control --> Upland veg
-# Goal: Select HUC units with the greatest area of upland area near an edge between grassland and forest or shrub 
+# Goal: Select HUC units with the greatest area of upland area near an edge between grassland and conifer or shrub 
 uplands <- raster(paste0(infolder, "uplands_10m_NAD83UTM.tif"))  # import uplands layer
-edge <- raster(paste0(infolder, "encroachment_500m_buffer_10m_NAD83UTM.tif"))  # import grassland edge layer
+edge <- raster(paste0(infolder, "grass_and_shrub_encroach_500m_buffer_10m_NAD83UTM.tif"))  # import grassland edge layer (pixels within 500m of an edge between grassland and shrub or conifer, OR within 500m of an edge between shrub and conifer)
 edge.uplands <- uplands * edge   # keep only those pixels that are both  and grass/forest/shrub edge
 zones.10m.crop <- crop(zones.10m, edge.uplands)  # crop by extent of smaller raster
 zonal.mat <- zonal(x=edge.uplands, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit (index of area)
@@ -781,16 +782,16 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "encroachControl_uplandVeg_condition_NAD83UTM.tif"  # name of output
+outfilename <- "encroachControl_4uplandVeg_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory
 
 
 ### Conifer/shrub control --> grassland connectivity
-# Goal: Select HUC units that contain the high centrality grassland flowlines near an edge between grassland and forest or shrub
+# Goal: Select HUC units that contain the high centrality grassland flowlines near an edge between grassland and conifer or shrub
 grass.centrality <- raster(paste0(infolder, "grassland_centrality_flowlines_10m_NAD83UTM.tif"))  # import grassland centrality layer
-edge <- raster(paste0(infolder, "encroachment_500m_buffer_10m_NAD83UTM.tif"))  # import grassland edge layer
+edge <- raster(paste0(infolder, "grass_encroach_500m_buffer_10m_NAD83UTM.tif"))  # import grassland edge layer (pixels within 500m of an edge between grassland and shrub or conifer)
 edge.centrality <- grass.centrality * edge   # keep only those flowlines that are within valley bottoms
 zones.10m.crop <- crop(zones.10m, edge.centrality)  # crop by extent of smaller raster
 zonal.mat <- zonal(x=edge.centrality, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
@@ -799,7 +800,25 @@ original <- zonal.mat[,2] # vector of raw condition values
 rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
 reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
 condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
-outfilename <- "encroachControl_grassCentrality_condition_NAD83UTM.tif"  # name of output
+outfilename <- "encroachControl_3grassCentrality_condition_NAD83UTM.tif"  # name of output
+writeRaster(condition, paste0(outfolder, outfilename))  # write output
+rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
+gc() # garbage collector to free up memory
+
+
+### Conifer/shrub control --> shrubland connectivity
+# Goal: Select HUC units that contain the high centrality grassland flowlines near an edge between shrubland and conifer
+shrub.centrality <- raster(paste0(infolder, "shrubland_centrality_flowlines_10m_NAD83UTM.tif"))  # import shrubland centrality layer
+edge <- raster(paste0(infolder, "shrub_encroach_500m_buffer_10m_NAD83UTM.tif"))  # import shrubland edge layer (pixels within 500m of an edge between shrubland and conifer)
+edge.centrality <- shrub.centrality * edge   # keep only those flowlines that are within valley bottoms
+zones.10m.crop <- crop(zones.10m, edge.centrality)  # crop by extent of smaller raster
+zonal.mat <- zonal(x=edge.centrality, z=zones.10m.crop, fun="sum", na.rm=TRUE)   # sum remaining pixels in each HUC unit
+zonal.mat[zonal.mat==0] <- NA  # set zones with sum=0 to NA, since we don't want to include these in prioritization as they have no opportunity for action
+original <- zonal.mat[,2] # vector of raw condition values
+rescaled <- (original - min(original, na.rm=TRUE))/(max(original, na.rm=TRUE)-min(original, na.rm=TRUE))  # POSITIVE RELATIONSHIP rescale condition values from 0-1
+reclass.mat <- as.matrix(cbind(zonal.mat[,1],rescaled))  # create reclassification table
+condition <- reclassify(zones.90m, reclass.mat) # reclassify using zonal.mat (replace zone ID with zonal stat value for each cell)
+outfilename <- "encroachControl_2shrubCentrality_condition_NAD83UTM.tif"  # name of output
 writeRaster(condition, paste0(outfolder, outfilename))  # write output
 rm(list=setdiff(ls(), c("zones.10m", "zones.90m", "infolder", "outfolder")))  # remove all R objects except for infolder, outfolder, and zones.10m
 gc() # garbage collector to free up memory

@@ -3,9 +3,57 @@
 
 require(raster)
 
-infolder <- "C:/Users/Tyler/Google Drive/NFWF Cross Realm/Data/Rasterized Inputs NAD83 UTM/"  # folder holding prepped input rasters (should have same projection, resolution, and origin as HUC12 zones layer)
-outfolder <- "C:/Users/Tyler/Google Drive/NFWF Cross Realm/Data/Removal Masks NAD83 UTM/"
-zones <- raster(paste0(infolder, "HUC12_zones_30m_NAD83UTM.tif"))  # zones template
+infolder <- "C:/Work/SpatialData/NFWF_Cross_Realm/Final Input Rasters/"  # folder holding prepped input rasters (should have same projection, resolution, and origin as HUC12 zones layer)
+outfolder <- "H:/Final Masks 90m/"
+zones.90m <- raster(paste0(infolder, "HUC12_zones_90m_NAD83UTM.tif"))
+
+
+### Forest/shrubland fuels management
+# Mask includes areas of high or very high wildfire risk
+fire <- raster(paste0(infolder, "wildfire_hazard_high_and_veryhigh_10m_NAD83UTM.tif"))   # import wildfire risk layer
+
+
+
+### Grazing management
+# Mask includes grazing allotments on public lands
+graze <- raster(paste0(infolder, "public_grazing_lands_10m_NAD83UTM.tif"))  # import buffered public grazing allotments layer
+
+
+
+### Irrigation adjustment
+# Mask includes all irrigated lands
+
+
+
+### Land protection
+# Mask includes all private, non-conserved lands
+
+
+
+### Bridge/culvert upgrade
+# Mask includes all bridges (buffered by 90m)
+
+
+
+### Road decommissioning
+# Mask includes all decommissionable road types (buffered by 90m)
+
+
+
+### Soil health management
+# Mask includes all agricultural lands (row crops and pasture/hay)
+
+
+
+### Stream/riparian restoration
+# Mask includes all streams (buffered by 90m) and valley bottoms
+
+
+
+### Conifer/shrub encroachment control
+# Mask includes all areas within 500m of a grassland - forest/shrub edge
+
+
 
 
 
